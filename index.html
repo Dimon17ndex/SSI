@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Потоковое информирование расписаний</title>
+    <title>Расписание классов</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -27,73 +27,65 @@
             border-radius: 14px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
 
-        /* ИНДИКАТОР С АНТЕННОЙ */
-        .status-container {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 30px;
-            height: 30px;
-            display: none; /* Скрыт по умолчанию */
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .status-circle {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Анимация волн */
-        .status-circle::before, .status-circle::after {
-            content: "";
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            animation: antenna-pulse 2s infinite;
-            z-index: 1;
-        }
-        .status-circle::after { animation-delay: 1s; }
-
-        @keyframes antenna-pulse {
-            0% { width: 14px; height: 14px; opacity: 0.8; border-width: 2px; border-style: solid; }
-            100% { width: 50px; height: 50px; opacity: 0; border-width: 1px; border-style: solid; }
-        }
-
-        /* Цвета индикатора */
-        .status-red .status-circle { background-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
-        .status-red .status-circle::before, .status-red .status-circle::after { border-color: #e74c3c; }
-        
-        .status-green .status-circle { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
-        .status-green .status-circle::before, .status-green .status-circle::after { border-color: #2ecc71; }
-
+        /* КОНТЕЙНЕР УПРАВЛЕНИЯ И КОММЕНТАРИЯ */
         .controls-container {
             margin: 20px auto; display: flex; justify-content: space-between; 
             align-items: center; width: 90%; max-width: 1100px; gap: 15px;
         }
+        
+        /* ВОЗВРАЩЕННЫЙ ОРАНЖЕВЫЙ БЛОК */
+        .comment-box {
+            background-color: #e67e22; color: white; padding: 12px 25px;
+            border-radius: 8px; font-weight: bold; min-width: 350px; min-height: 24px;
+            transition: all 0.5s ease; opacity: 0;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .comment-box.show { opacity: 1; }
+
+        .info-icon {
+            display: flex; align-items: center; justify-content: center;
+            width: 24px; height: 24px; border: 2px solid white; border-radius: 50%; 
+            font-size: 18px; font-weight: bold; flex-shrink: 0;
+            line-height: 0; padding-bottom: 2px; box-sizing: border-box;
+        }
+
+        /* ИНДИКАТОР-АНТЕННА */
+        .status-container {
+            position: absolute; left: 20px; top: 50%;
+            transform: translateY(-50%); width: 30px; height: 30px;
+            display: none; align-items: center; justify-content: center;
+        }
+        .status-circle { width: 14px; height: 14px; border-radius: 50%; position: relative; z-index: 2; }
+        .status-circle::before, .status-circle::after {
+            content: ""; position: absolute; top: 50%; left: 50%;
+            width: 100%; height: 100%; border-radius: 50%;
+            transform: translate(-50%, -50%); animation: antenna-pulse 2s infinite; z-index: 1;
+        }
+        .status-circle::after { animation-delay: 1s; }
+        @keyframes antenna-pulse {
+            0% { width: 14px; height: 14px; opacity: 0.8; border-width: 2px; border-style: solid; }
+            100% { width: 50px; height: 50px; opacity: 0; border-width: 1px; border-style: solid; }
+        }
+        .status-red .status-circle { background-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
+        .status-red .status-circle::before, .status-red .status-circle::after { border-color: #e74c3c; }
+        .status-green .status-circle { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
+        .status-green .status-circle::before, .status-green .status-circle::after { border-color: #2ecc71; }
         
         .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap; }
         .btn-set { background-color: #3498db; color: white; margin-right: 10px; }
         .btn-reset { background-color: #e74c3c; color: white; }
 
         .class-row { display: flex; align-items: stretch; width: 90%; max-width: 1100px; margin: 8px auto; }
-
         .class-table {
             flex: 1; border-collapse: collapse; background: white;
             border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.5s ease-in-out;
         }
-
         .class-table th {
             padding: 16px; font-size: 1.3rem; color: white; background-color: #2c3e50;
             transition: background-color 0.8s ease; position: relative;
         }
+        /* ТЕМНО-ГРАФИТОВЫЙ ЦВЕТ ОЖИДАНИЯ */
         .class-table.standby-mode th { background-color: #444444 !important; }
 
         .class-table td {
@@ -138,9 +130,10 @@
         .class-table.preparing .loading-circle { opacity: 1; }
 
         @media (max-width: 768px) {
+            .controls-container { flex-direction: column; width: 95%; }
+            .comment-box { min-width: 90%; font-size: 0.9rem; padding: 10px 15px; }
             .class-row { flex-direction: column; width: 95%; }
             .timer-container.visible { width: 100%; max-width: 100%; margin-left: 0; margin-top: 10px; }
-            .status-container { left: 10px; transform: translateY(-50%) scale(0.8); }
         }
     </style>
 </head>
@@ -156,7 +149,11 @@
     <div id="currentTime">00:00:00</div>
 
     <div class="controls-container">
-        <div style="flex:1"></div> <div>
+        <div id="commentBox" class="comment-box">
+            <div class="info-icon">!</div>
+            <span id="commentText"></span>
+        </div>
+        <div>
             <button class="btn btn-set" onclick="openTimeDialog()">Тест</button>
             <button class="btn btn-reset" onclick="resetToLocalTime()">Сброс</button>
         </div>
@@ -267,6 +264,17 @@
             document.getElementById('month').textContent = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'][now.getMonth()];
             document.getElementById('currentYear').textContent = now.getFullYear();
 
+            // ЛОГИКА ОРАНЖЕВОГО КОММЕНТАРИЯ
+            const commentBox = document.getElementById('commentBox');
+            const breakfastStart = timeToSec('08:35');
+            const breakfastEnd = timeToSec('08:55');
+            if (totalSec >= breakfastStart && totalSec < breakfastEnd) {
+                document.getElementById('commentText').textContent = "Предположительно, первоклассники сейчас завтракают в столовой";
+                commentBox.classList.add('show');
+            } else {
+                commentBox.classList.remove('show');
+            }
+
             const prepStart = 6 * 3600 + 56 * 60; 
             const activeStart = 7 * 3600;          
             const activeEnd = 8 * 3600; 
@@ -292,7 +300,7 @@
             
             table.classList.remove('preparing', 'active-interval', 'standby-mode');
             redTimer.classList.remove('show', 'is-preparing', 'is-break');
-            statusBox.style.display = 'none'; // По умолчанию прячем антенну
+            statusBox.style.display = 'none';
             statusBox.classList.remove('status-red', 'status-green');
 
             if (totalSec < prepStart) {
@@ -315,7 +323,6 @@
                     redTimer.textContent = formatTime(remaining);
                     redTimer.classList.add('show');
                     
-                    // ВКЛЮЧАЕМ АНТЕННУ
                     statusBox.style.display = 'flex';
                     if (currentPeriod.name.includes('Перемена')) {
                         redTimer.classList.add('is-break');
@@ -351,5 +358,4 @@
         updateClockAndUi();
     </script>
 </body>
-
 </html>
