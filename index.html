@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSI</title>
+    <title>Определение устройства</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,7 +13,6 @@
             height: 100vh;
             margin: 0;
             background-color: #f0f2f5;
-            transition: background-color 0.3s ease;
         }
         .card {
             background: white;
@@ -33,12 +32,6 @@
             font-size: 1.25rem;
             font-weight: 600;
             color: #2c3e50;
-            line-height: 1.4;
-        }
-        .loader {
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: #7f8c8d;
         }
     </style>
 </head>
@@ -47,52 +40,49 @@
     <div class="card">
         <div id="device-icon">🔍</div>
         <div id="result">Анализ системы...</div>
-        <div id="status-text" class="loader">Пожалуйста, подождите</div>
     </div>
 
     <script>
         function checkDevice() {
             const resultElement = document.getElementById('result');
             const iconElement = document.getElementById('device-icon');
-            const statusElement = document.getElementById('status-text');
             
             const ua = navigator.userAgent;
             let device = "desktop";
 
-            // 1. Проверка на мобильные устройства (смартфоны и планшеты)
+            // Логика определения типа устройства
             if (/android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase())) {
                 device = "mobile";
             }
             
-            // 2. Дополнительная проверка для iPad на новых версиях iOS
             if (navigator.maxTouchPoints > 0 && /Macintosh/.test(ua)) {
                 device = "mobile";
             }
 
-            // Логика действий
+            // Выполнение перенаправлений
             if (device === "mobile") {
-                // Если зашли с ТЕЛЕФОНА
-                resultElement.textContent = "Вы зашли с мобильного устройства";
+                // ЛОГИКА ДЛЯ МОБИЛЬНЫХ
+                resultElement.textContent = "Переход на мобильную версию...";
                 iconElement.textContent = "📱";
-                document.body.style.backgroundColor = "#e8f5e9"; // Светло-зеленый
-                statusElement.textContent = "Доступ разрешен";
-            } else {
-                // Если зашли с ПК
-                resultElement.textContent = "Вы зашли с компьютера (ПК)";
-                iconElement.textContent = "💻";
-                document.body.style.backgroundColor = "#e3f2fd"; // Светло-голубой
-                statusElement.textContent = "Перенаправление...";
+                document.body.style.backgroundColor = "#e8f5e9";
 
-                // Перенаправление через 5 миллисекунд
+                setTimeout(function() {
+                    window.location.href = "mobver.html";
+                }, 5); 
+
+            } else {
+                // ЛОГИКА ДЛЯ ПК
+                resultElement.textContent = "Переход на версию для ПК...";
+                iconElement.textContent = "💻";
+                document.body.style.backgroundColor = "#e3f2fd";
+
                 setTimeout(function() {
                     window.location.href = "winver.html";
                 }, 5);
             }
         }
 
-        // Запуск функции после полной загрузки страницы
         window.onload = checkDevice;
     </script>
 </body>
 </html>
-
