@@ -1,721 +1,396 @@
 <!DOCTYPE html>
-
 <html lang="ru">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
     <title>Потоковое информирование расписаний</title>
-
     <style>
-
         body {
-
             font-family: 'Segoe UI', Arial, sans-serif;
-
             margin: 0; padding: 0;
-
             background-color: #f0f0f0;
-
             min-height: 100vh;
-
             display: flex; flex-direction: column; align-items: center;
-
         }
+
+        /* --- НОВЫЙ СТИЛЬ: ТАБЛИЧКА PC VERSION --- */
+        .pc-version-badge {
+            display: flex;
+            align-items: center;
+            background-color: #3498db; /* Голубой цвет */
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Значок сигнала (три палочки) */
+        .signal-icon {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 14px;
+        }
+        .signal-bar {
+            width: 3px;
+            background-color: white;
+            border-radius: 1px;
+        }
+        .bar1 { height: 40%; }
+        .bar2 { height: 70%; }
+        .bar3 { height: 100%; }
+        /* ---------------------------------------- */
 
         .header {
-
             display: flex; justify-content: space-between; align-items: center;
-
             padding: 20px 40px; background-color: #fff; width: 100%; box-sizing: border-box;
-
         }
-
         .date-block { display: flex; flex-direction: column; align-items: flex-start; }
-
         .day-name { font-size: 1.8rem; font-weight: bold; color: #2c3e50; }
-
         .day-month { font-size: 1.4rem; color: #7f8c8d; margin-top: 4px; }
-
         #currentYear { font-size: 3rem; font-weight: bold; color: #2c3e50; }
 
-
-
         #currentTime {
-
             text-align: center; margin: 30px auto; font-size: 2.8rem;
-
             color: #333; background-color: #fff; padding: 18px 35px;
-
             border-radius: 14px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-
         }
-
-
-
-        /* КОНТЕЙНЕР УПРАВЛЕНИЯ И КОММЕНТАРИЯ */
 
         .controls-container {
-
             margin: 20px auto; display: flex; justify-content: space-between; 
-
             align-items: center; width: 90%; max-width: 1100px; gap: 15px;
-
         }
-
         
-
-        /* ВОЗВРАЩЕННЫЙ ОРАНЖЕВЫЙ БЛОК */
-
         .comment-box {
-
             background-color: #e67e22; color: white; padding: 12px 25px;
-
             border-radius: 8px; font-weight: bold; min-width: 350px; min-height: 24px;
-
             transition: all 0.5s ease; opacity: 0;
-
             display: flex; align-items: center; gap: 12px;
-
         }
-
         .comment-box.show { opacity: 1; }
 
-
-
         .info-icon {
-
             display: flex; align-items: center; justify-content: center;
-
             width: 24px; height: 24px; border: 2px solid white; border-radius: 50%; 
-
             font-size: 18px; font-weight: bold; flex-shrink: 0;
-
             line-height: 0; padding-bottom: 2px; box-sizing: border-box;
-
         }
-
-
-
-        /* ИНДИКАТОР-АНТЕННА */
 
         .status-container {
-
             position: absolute; left: 20px; top: 50%;
-
             transform: translateY(-50%); width: 30px; height: 30px;
-
             display: none; align-items: center; justify-content: center;
-
         }
-
         .status-circle { width: 14px; height: 14px; border-radius: 50%; position: relative; z-index: 2; }
-
         .status-circle::before, .status-circle::after {
-
             content: ""; position: absolute; top: 50%; left: 50%;
-
             width: 100%; height: 100%; border-radius: 50%;
-
             transform: translate(-50%, -50%); animation: antenna-pulse 2s infinite; z-index: 1;
-
         }
-
         .status-circle::after { animation-delay: 1s; }
-
         @keyframes antenna-pulse {
-
             0% { width: 14px; height: 14px; opacity: 0.8; border-width: 2px; border-style: solid; }
-
             100% { width: 50px; height: 50px; opacity: 0; border-width: 1px; border-style: solid; }
-
         }
-
         .status-red .status-circle { background-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
-
         .status-red .status-circle::before, .status-red .status-circle::after { border-color: #e74c3c; }
-
         .status-green .status-circle { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
-
         .status-green .status-circle::before, .status-green .status-circle::after { border-color: #2ecc71; }
-
         
-
         .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap; }
-
         .btn-set { background-color: #3498db; color: white; margin-right: 10px; }
-
         .btn-reset { background-color: #e74c3c; color: white; }
 
-
-
         .class-row { display: flex; align-items: stretch; width: 90%; max-width: 1100px; margin: 8px auto; }
-
         .class-table {
-
             flex: 1; border-collapse: collapse; background: white;
-
             border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
             transition: all 0.5s ease-in-out;
-
         }
-
         .class-table th {
-
             padding: 16px; font-size: 1.3rem; color: white; background-color: #2c3e50;
-
             transition: background-color 0.8s ease; position: relative;
-
         }
-
-        /* ТЕМНО-ГРАФИТОВЫЙ ЦВЕТ ОЖИДАНИЯ */
-
         .class-table.standby-mode th { background-color: #444444 !important; }
 
-
-
         .class-table td {
-
             padding: 20px; text-align: center; border: 1px solid #ddd;
-
             font-size: 1.2rem; height: 80px; font-weight: 500; position: relative;
-
         }
-
-
 
         .inner-red-timer {
-
             position: absolute; bottom: 10px; right: 15px;
-
             border: 3px solid #e74c3c; color: #e74c3c;
-
             padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 1.1rem;
-
             opacity: 0; transform: translateY(5px); transition: all 0.5s ease;
-
         }
-
         .inner-red-timer.is-break { border-color: #2ecc71; color: #2ecc71; }
-
         .inner-red-timer.is-preparing { border-color: #3498db; color: #3498db; }
-
         .inner-red-timer.show { opacity: 1; transform: translateY(0); }
 
-
-
         .timer-container {
-
             width: 0; max-width: 0; opacity: 0; overflow: hidden;
-
             transition: all 0.5s ease-in-out; display: flex;
-
         }
-
         .timer-container.visible { width: 300px; max-width: 300px; opacity: 1; margin-left: 15px; }
 
-
-
         .timer-table {
-
             width: 280px; border-radius: 10px; overflow: hidden; border-collapse: collapse;
-
             background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.08); flex-shrink: 0;
-
         }
-
         .timer-table th { padding: 12px; background: #222; color: #fff; font-size: 0.9rem; }
-
         .timer-table td { padding: 20px; text-align: center; font-size: 1.8rem; font-weight: bold; }
 
-
-
         .loading-circle {
-
             display: inline-block; float: right; margin-left: 10px;
-
             width: 22px; height: 22px; border-radius: 50%;
-
             border-top: 3px solid white; border-right: 3px solid transparent;
-
             animation: spin 1s linear infinite; opacity: 0; transition: opacity 0.5s;
-
         }
-
         @keyframes spin { to {transform: rotate(360deg);} }
 
-
-
         .class-table.active-interval th { background-color: #3498db !important; }
-
         .class-table.preparing th { background-color: #2c3e50 !important; }
-
         .class-table.active-interval .loading-circle,
-
         .class-table.preparing .loading-circle { opacity: 1; }
 
-
-
         @media (max-width: 768px) {
-
             .controls-container { flex-direction: column; width: 95%; }
-
             .comment-box { min-width: 90%; font-size: 0.9rem; padding: 10px 15px; }
-
             .class-row { flex-direction: column; width: 95%; }
-
             .timer-container.visible { width: 100%; max-width: 100%; margin-left: 0; margin-top: 10px; }
-
         }
-
     </style>
-
 </head>
-
 <body>
-
     <div class="header">
-
         <div class="date-block">
-
-            <div id="dayName" class="day-name"></div>
-
+            <div class="pc-version-badge">
+                PC version
+                <div class="signal-icon">
+                    <div class="signal-bar bar1"></div>
+                    <div class="signal-bar bar2"></div>
+                    <div class="signal-bar bar3"></div>
+                </div>
+            </div>
+            <div id="dayName" class="day-name" style="margin-top: 10px;"></div>
             <div class="day-month"><span id="dayDate"></span> <span id="month"></span></div>
-
         </div>
-
         <div id="currentYear"></div>
-
     </div>
-
-
 
     <div id="currentTime">00:00:00</div>
 
-
-
     <div class="controls-container">
-
         <div id="commentBox" class="comment-box">
-
             <div class="info-icon">!</div>
-
             <span id="commentText"></span>
-
         </div>
-
         <div>
-
             <button class="btn btn-set" onclick="openTimeDialog()">Тест</button>
-
             <button class="btn btn-reset" onclick="resetToLocalTime()">Сброс</button>
-
         </div>
-
     </div>
 
-
-
     <div class="class-row">
-
         <table class="class-table" id="table-1ab">
-
             <thead>
-
                 <tr>
-
                     <th>
-
                         <div class="status-container" id="status-1ab"><div class="status-circle"></div></div>
-
                         1-А/Б Класс<span class="loading-circle"></span>
-
                     </th>
-
                 </tr>
-
             </thead>
-
             <tbody><tr><td><span id="class-1ab-slot"></span><div class="inner-red-timer" id="red-timer-1ab"></div></td></tr></tbody>
-
         </table>
-
         <div class="timer-container" id="cont-1ab">
-
             <table class="timer-table">
-
                 <thead><tr><th>До начала информирования осталось:</th></tr></thead>
-
                 <tbody><tr><td id="timer-1ab-value">-- мин</td></tr></tbody>
-
             </table>
-
         </div>
-
     </div>
-
-
 
     <div class="class-row">
-
         <table class="class-table" id="table-11b">
-
             <thead>
-
                 <tr>
-
                     <th>
-
                         <div class="status-container" id="status-11b"><div class="status-circle"></div></div>
-
                         11-Б Класс<span class="loading-circle"></span>
-
                     </th>
-
                 </tr>
-
             </thead>
-
             <tbody><tr><td><span id="class-11b-slot"></span><div class="inner-red-timer" id="red-timer-11b"></div></td></tr></tbody>
-
         </table>
-
         <div class="timer-container" id="cont-11b">
-
             <table class="timer-table">
-
                 <thead><tr><th>До начала информирования осталось:</th></tr></thead>
-
                 <tbody><tr><td id="timer-11b-value">-- мин</td></tr></tbody>
-
             </table>
-
         </div>
-
     </div>
-
-
 
     <div id="timeDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; width: 80%; max-width: 300px;">
-
         <h3 style="margin-top:0">Время</h3>
-
         <input type="time" id="testTimeInput" style="padding: 10px; width: 100%; box-sizing: border-box;">
-
         <div style="margin-top: 20px; display: flex; gap: 10px;">
-
             <button class="btn btn-set" onclick="setTestTime()">OK</button>
-
             <button class="btn" onclick="closeTimeDialog()">Отмена</button>
-
         </div>
-
     </div>
 
-
-
     <script>
-
         let simulatedNow = null;
 
-
-
         const schedule1ab = [
-
             { name: 'Урок №1', start: '08:00', end: '08:35' },
-
             { name: 'Перемена', start: '08:35', end: '08:55' },
-
             { name: 'Урок №2', start: '08:55', end: '09:30' },
-
             { name: 'Перемена', start: '09:30', end: '09:40' },
-
             { name: 'Урок №3', start: '09:40', end: '10:15' },
-
             { name: 'Перемена', start: '10:15', end: '10:45' },
-
             { name: 'Урок №4', start: '10:45', end: '11:20' },
-
             { name: 'Перемена', start: '11:20', end: '11:30' },
-
             { name: 'Урок №5', start: '11:30', end: '12:05' },
-
             { name: 'Перемена', start: '12:05', end: '12:15' },
-
             { name: 'Урок №6', start: '12:15', end: '12:50' }
-
         ];
-
-
 
         const schedule11b = [
-
             { name: 'Урок №1', start: '08:00', end: '08:35' },
-
             { name: 'Перемена', start: '08:35', end: '08:45' },
-
             { name: 'Урок №2', start: '08:45', end: '09:20' },
-
             { name: 'Перемена', start: '09:20', end: '09:35' },
-
             { name: 'Урок №3', start: '09:35', end: '10:10' },
-
             { name: 'Перемена', start: '10:10', end: '10:25' },
-
             { name: 'Урок №4', start: '10:25', end: '11:00' },
-
             { name: 'Перемена', start: '11:00', end: '11:10' },
-
             { name: 'Урок №5', start: '11:10', end: '11:45' },
-
             { name: 'Перемена', start: '11:45', end: '11:55' },
-
             { name: 'Урок №6', start: '11:55', end: '12:30' },
-
             { name: 'Перемена', start: '12:30', end: '12:40' },
-
             { name: 'Урок №7', start: '12:40', end: '13:15' }
-
         ];
 
-
-
         function timeToSec(str) {
-
             const [h, m] = str.split(':').map(Number);
-
             return h * 3600 + m * 60;
-
         }
-
-
 
         function toggleTimerVisibility(show) {
-
             const containers = [document.getElementById('cont-1ab'), document.getElementById('cont-11b')];
-
             containers.forEach(c => {
-
                 if (show) c.classList.add('visible');
-
                 else c.classList.remove('visible');
-
             });
-
         }
-
-
 
         function updateClockAndUi() {
-
             const now = simulatedNow ? new Date(simulatedNow) : new Date();
-
             const totalSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-
-
             document.getElementById('currentTime').textContent = `Сейчас ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-
             document.getElementById('dayName').textContent = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'][now.getDay()];
-
             document.getElementById('dayDate').textContent = now.getDate();
-
             document.getElementById('month').textContent = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'][now.getMonth()];
-
             document.getElementById('currentYear').textContent = now.getFullYear();
 
-
-
-            // ЛОГИКА ОРАНЖЕВОГО КОММЕНТАРИЯ
-
             const commentBox = document.getElementById('commentBox');
-
             const breakfastStart = timeToSec('08:35');
-
             const breakfastEnd = timeToSec('08:55');
-
             if (totalSec >= breakfastStart && totalSec < breakfastEnd) {
-
                 document.getElementById('commentText').textContent = "Предположительно, первоклассники сейчас завтракают в столовой";
-
                 commentBox.classList.add('show');
-
             } else {
-
                 commentBox.classList.remove('show');
-
             }
-
-
 
             const prepStart = 6 * 3600 + 56 * 60; 
-
-            const activeStart = 7 * 3600;          
-
-            const activeEnd = 8 * 3600; 
-
-
+            const activeStart = 7 * 3600;           
+            const activeEnd = 8 * 3600;  
 
             if (totalSec >= prepStart && totalSec < activeStart) {
-
                 const diff = activeStart - totalSec;
-
                 document.getElementById('timer-1ab-value').textContent = 
-
                 document.getElementById('timer-11b-value').textContent = `${Math.ceil(diff / 60)} мин`;
-
                 toggleTimerVisibility(true);
-
             } else {
-
                 toggleTimerVisibility(false);
-
             }
-
-
 
             processClass('1ab', schedule1ab, totalSec, activeStart, activeEnd, prepStart);
-
             processClass('11b', schedule11b, totalSec, activeStart, activeEnd, prepStart);
-
         }
-
-
 
         function processClass(classId, schedule, totalSec, activeStart, activeEnd, prepStart) {
-
             const slot = document.getElementById(`class-${classId}-slot`);
-
             const table = document.getElementById(`table-${classId}`);
-
             const redTimer = document.getElementById(`red-timer-${classId}`);
-
             const statusBox = document.getElementById(`status-${classId}`);
-
             
-
             table.classList.remove('preparing', 'active-interval', 'standby-mode');
-
             redTimer.classList.remove('show', 'is-preparing', 'is-break');
-
             statusBox.style.display = 'none';
-
             statusBox.classList.remove('status-red', 'status-green');
 
-
-
             if (totalSec < prepStart) {
-
                 table.classList.add('standby-mode'); 
-
                 slot.textContent = 'ОЖИДАНИЕ УСТАНОВКИ СВЯЗИ С СЕРВЕРОМ';
-
             } else if (totalSec < activeStart) {
-
                 table.classList.add('preparing');
-
                 slot.innerHTML = 'ПОДГОТОВКА ПОТОКОВОГО ИНФОРМИРОВАНИЯ...';
-
             } else if (totalSec < activeEnd) {
-
                 table.classList.add('active-interval');
-
                 slot.textContent = 'ПОДГОТОВКА К УРОКУ №1';
-
                 const remaining = activeEnd - totalSec;
-
                 redTimer.textContent = formatTime(remaining);
-
                 redTimer.classList.add('show', 'is-preparing');
-
             } else {
-
                 let currentPeriod = schedule.find(p => totalSec >= timeToSec(p.start) && totalSec < timeToSec(p.end));
-
                 if (currentPeriod) {
-
                     slot.textContent = currentPeriod.name.toUpperCase();
-
                     const remaining = timeToSec(currentPeriod.end) - totalSec;
-
                     redTimer.textContent = formatTime(remaining);
-
                     redTimer.classList.add('show');
-
                     
-
                     statusBox.style.display = 'flex';
-
                     if (currentPeriod.name.includes('Перемена')) {
-
                         redTimer.classList.add('is-break');
-
                         statusBox.classList.add('status-green');
-
                     } else {
-
                         statusBox.classList.add('status-red');
-
                     }
-
                 } else {
-
                     table.classList.add('standby-mode');
-
                     slot.textContent = 'СИСТЕМА В РЕЖИМЕ ОЖИДАНИЯ';
-
                 }
-
             }
-
         }
-
-
 
         function formatTime(seconds) {
-
             const m = Math.floor(seconds / 60);
-
             const s = seconds % 60;
-
             return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-
         }
-
-
 
         function openTimeDialog() { document.getElementById('timeDialog').style.display = 'block'; }
-
         function closeTimeDialog() { document.getElementById('timeDialog').style.display = 'none'; }
-
         function setTestTime() {
-
             const val = document.getElementById('testTimeInput').value;
-
             if (!val) return;
-
             const [h, m] = val.split(':').map(Number);
-
             simulatedNow = new Date(); simulatedNow.setHours(h, m, 0);
-
             updateClockAndUi();
-
             closeTimeDialog();
-
         }
-
         function resetToLocalTime() { simulatedNow = null; updateClockAndUi(); }
-
         setInterval(() => { if (simulatedNow) simulatedNow = new Date(simulatedNow.getTime() + 1000); updateClockAndUi(); }, 1000);
-
         updateClockAndUi();
-
     </script>
-
 </body>
-
 </html>
