@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Определение устройства</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        #device-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        #result {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div id="device-icon">🔍</div>
+        <div id="result">Определяем устройство...</div>
+    </div>
+
+    <script>
+        function checkDevice() {
+            const resultElement = document.getElementById('result');
+            const iconElement = document.getElementById('device-icon');
+            
+            const ua = navigator.userAgent;
+            let device = "desktop";
+
+            // Логика определения
+            if (/android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase())) {
+                device = "mobile";
+            }
+            
+            // Проверка для современных iPad на iPadOS
+            if (navigator.maxTouchPoints > 0 && /Macintosh/.test(ua)) {
+                device = "mobile";
+            }
+
+            // Вывод результата на экран
+            if (device === "mobile") {
+                resultElement.textContent = "Вы зашли с мобильного устройства";
+                iconElement.textContent = "📱";
+                document.body.style.backgroundColor = "#e8f5e9"; // Зеленоватый фон для мобильных
+            } else {
+                resultElement.textContent = "Вы зашли с компьютера (ПК)";
+                iconElement.textContent = "💻";
+                document.body.style.backgroundColor = "#e3f2fd"; // Голубоватый фон для ПК
+            }
+        }
+
+        // Запускаем при загрузке страницы
+        window.onload = checkDevice;
+    </script>
+</body>
+</html>
