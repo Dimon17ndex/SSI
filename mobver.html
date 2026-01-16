@@ -13,7 +13,6 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* --- ФИКСИРОВАННАЯ ШАПКА --- */
         .header {
             display: flex; 
             justify-content: space-between; 
@@ -22,7 +21,6 @@
             background-color: #fff; 
             width: 100%; 
             box-sizing: border-box;
-            /* Изменения здесь: */
             position: sticky; 
             top: 0; 
             z-index: 1000; 
@@ -63,11 +61,32 @@
         .day-month { font-size: 1.4rem; color: #7f8c8d; margin-top: 4px; }
         #currentYear { font-size: 3rem; font-weight: bold; color: #2c3e50; }
 
+        /* --- ИЗМЕНЕННЫЙ БЛОК ВРЕМЕНИ --- */
         #currentTime {
-            text-align: center; margin: 30px auto; font-size: 2.8rem;
-            color: #333; background-color: #fff; padding: 18px 35px;
-            border-radius: 14px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column; /* Текст в колонку */
+            align-items: center;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 15px 25px; /* Уменьшили отступы для компактности */
+            border-radius: 14px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            width: fit-content; /* Ширина строго по контенту */
         }
+        .time-label {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .time-value {
+            font-size: 3.2rem;
+            color: #333;
+            font-weight: bold;
+            line-height: 1;
+        }
+        /* ------------------------------- */
 
         .controls-container {
             margin: 20px auto; display: flex; justify-content: space-between; 
@@ -172,7 +191,6 @@
             .comment-box { min-width: 90%; font-size: 0.9rem; padding: 10px 15px; }
             .class-row { flex-direction: column; width: 95%; }
             .timer-container.visible { width: 100%; max-width: 100%; margin-left: 0; margin-top: 10px; }
-            /* На мобильных уменьшаем отступы фиксированной шапки */
             .header { padding: 10px 20px; }
         }
     </style>
@@ -194,7 +212,10 @@
         <div id="currentYear"></div>
     </div>
 
-    <div id="currentTime">00:00:00</div>
+    <div id="currentTime">
+        <div class="time-label">Сейчас</div>
+        <div id="timeValue" class="time-value">00:00:00</div>
+    </div>
 
     <div class="controls-container">
         <div id="commentBox" class="comment-box">
@@ -306,7 +327,9 @@
             const now = simulatedNow ? new Date(simulatedNow) : new Date();
             const totalSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-            document.getElementById('currentTime').textContent = `Сейчас ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            // Обновляем только значение времени
+            document.getElementById('timeValue').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            
             document.getElementById('dayName').textContent = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'][now.getDay()];
             document.getElementById('dayDate').textContent = now.getDate();
             document.getElementById('month').textContent = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'][now.getMonth()];
