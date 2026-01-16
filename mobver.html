@@ -12,6 +12,39 @@
             min-height: 100vh;
             display: flex; flex-direction: column; align-items: center;
         }
+
+        /* --- НОВАЯ ТАБЛИЧКА MOBILE VERSION --- */
+        .mobile-version-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e67e22; /* Морковный цвет */
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            gap: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            margin-bottom: 12px;
+        }
+
+        /* Значок сигнала (три палочки) */
+        .signal-icon {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 14px;
+        }
+        .signal-bar {
+            width: 3px;
+            background-color: white;
+            border-radius: 1px;
+        }
+        .bar1 { height: 40%; }
+        .bar2 { height: 70%; }
+        .bar3 { height: 100%; }
+        /* -------------------------------------- */
+
         .header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 20px 40px; background-color: #fff; width: 100%; box-sizing: border-box;
@@ -27,13 +60,11 @@
             border-radius: 14px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
 
-        /* КОНТЕЙНЕР УПРАВЛЕНИЯ И КОММЕНТАРИЯ */
         .controls-container {
             margin: 20px auto; display: flex; justify-content: space-between; 
             align-items: center; width: 90%; max-width: 1100px; gap: 15px;
         }
         
-        /* ВОЗВРАЩЕННЫЙ ОРАНЖЕВЫЙ БЛОК */
         .comment-box {
             background-color: #e67e22; color: white; padding: 12px 25px;
             border-radius: 8px; font-weight: bold; min-width: 350px; min-height: 24px;
@@ -49,7 +80,6 @@
             line-height: 0; padding-bottom: 2px; box-sizing: border-box;
         }
 
-        /* ИНДИКАТОР-АНТЕННА */
         .status-container {
             position: absolute; left: 20px; top: 50%;
             transform: translateY(-50%); width: 30px; height: 30px;
@@ -85,7 +115,6 @@
             padding: 16px; font-size: 1.3rem; color: white; background-color: #2c3e50;
             transition: background-color 0.8s ease; position: relative;
         }
-        /* ТЕМНО-ГРАФИТОВЫЙ ЦВЕТ ОЖИДАНИЯ */
         .class-table.standby-mode th { background-color: #444444 !important; }
 
         .class-table td {
@@ -140,6 +169,14 @@
 <body>
     <div class="header">
         <div class="date-block">
+            <div class="mobile-version-badge">
+                Mobile version
+                <div class="signal-icon">
+                    <div class="signal-bar bar1"></div>
+                    <div class="signal-bar bar2"></div>
+                    <div class="signal-bar bar3"></div>
+                </div>
+            </div>
             <div id="dayName" class="day-name"></div>
             <div class="day-month"><span id="dayDate"></span> <span id="month"></span></div>
         </div>
@@ -209,6 +246,7 @@
     </div>
 
     <script>
+        // JS скрипт остается прежним
         let simulatedNow = null;
 
         const schedule1ab = [
@@ -264,11 +302,8 @@
             document.getElementById('month').textContent = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'][now.getMonth()];
             document.getElementById('currentYear').textContent = now.getFullYear();
 
-            // ЛОГИКА ОРАНЖЕВОГО КОММЕНТАРИЯ
             const commentBox = document.getElementById('commentBox');
-            const breakfastStart = timeToSec('08:35');
-            const breakfastEnd = timeToSec('08:55');
-            if (totalSec >= breakfastStart && totalSec < breakfastEnd) {
+            if (totalSec >= timeToSec('08:35') && totalSec < timeToSec('08:55')) {
                 document.getElementById('commentText').textContent = "Предположительно, первоклассники сейчас завтракают в столовой";
                 commentBox.classList.add('show');
             } else {
@@ -276,8 +311,7 @@
             }
 
             const prepStart = 6 * 3600 + 56 * 60; 
-            const activeStart = 7 * 3600;          
-            const activeEnd = 8 * 3600; 
+            const activeStart = 7 * 3600;           
 
             if (totalSec >= prepStart && totalSec < activeStart) {
                 const diff = activeStart - totalSec;
@@ -288,8 +322,8 @@
                 toggleTimerVisibility(false);
             }
 
-            processClass('1ab', schedule1ab, totalSec, activeStart, activeEnd, prepStart);
-            processClass('11b', schedule11b, totalSec, activeStart, activeEnd, prepStart);
+            processClass('1ab', schedule1ab, totalSec, activeStart, 8 * 3600, prepStart);
+            processClass('11b', schedule11b, totalSec, activeStart, 8 * 3600, prepStart);
         }
 
         function processClass(classId, schedule, totalSec, activeStart, activeEnd, prepStart) {
@@ -301,7 +335,6 @@
             table.classList.remove('preparing', 'active-interval', 'standby-mode');
             redTimer.classList.remove('show', 'is-preparing', 'is-break');
             statusBox.style.display = 'none';
-            statusBox.classList.remove('status-red', 'status-green');
 
             if (totalSec < prepStart) {
                 table.classList.add('standby-mode'); 
@@ -322,13 +355,12 @@
                     const remaining = timeToSec(currentPeriod.end) - totalSec;
                     redTimer.textContent = formatTime(remaining);
                     redTimer.classList.add('show');
-                    
                     statusBox.style.display = 'flex';
                     if (currentPeriod.name.includes('Перемена')) {
                         redTimer.classList.add('is-break');
-                        statusBox.classList.add('status-green');
+                        statusBox.className = 'status-container status-green';
                     } else {
-                        statusBox.classList.add('status-red');
+                        statusBox.className = 'status-container status-red';
                     }
                 } else {
                     table.classList.add('standby-mode');
