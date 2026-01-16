@@ -6,29 +6,39 @@
     <title>Определение устройства</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             background-color: #f0f2f5;
+            transition: background-color 0.3s ease;
         }
         .card {
             background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             text-align: center;
+            max-width: 400px;
+            width: 90%;
         }
         #device-icon {
-            font-size: 4rem;
+            font-size: 5rem;
             margin-bottom: 1rem;
+            display: block;
         }
         #result {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+        .loader {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
         }
     </style>
 </head>
@@ -36,40 +46,51 @@
 
     <div class="card">
         <div id="device-icon">🔍</div>
-        <div id="result">Определяем устройство...</div>
+        <div id="result">Анализ системы...</div>
+        <div id="status-text" class="loader">Пожалуйста, подождите</div>
     </div>
 
     <script>
         function checkDevice() {
             const resultElement = document.getElementById('result');
             const iconElement = document.getElementById('device-icon');
+            const statusElement = document.getElementById('status-text');
             
             const ua = navigator.userAgent;
             let device = "desktop";
 
-            // Логика определения
+            // 1. Проверка на мобильные устройства (смартфоны и планшеты)
             if (/android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase())) {
                 device = "mobile";
             }
             
-            // Проверка для современных iPad на iPadOS
+            // 2. Дополнительная проверка для iPad на новых версиях iOS
             if (navigator.maxTouchPoints > 0 && /Macintosh/.test(ua)) {
                 device = "mobile";
             }
 
-            // Вывод результата на экран
+            // Логика действий
             if (device === "mobile") {
+                // Если зашли с ТЕЛЕФОНА
                 resultElement.textContent = "Вы зашли с мобильного устройства";
                 iconElement.textContent = "📱";
-                document.body.style.backgroundColor = "#e8f5e9"; // Зеленоватый фон для мобильных
+                document.body.style.backgroundColor = "#e8f5e9"; // Светло-зеленый
+                statusElement.textContent = "Доступ разрешен";
             } else {
+                // Если зашли с ПК
                 resultElement.textContent = "Вы зашли с компьютера (ПК)";
                 iconElement.textContent = "💻";
-                document.body.style.backgroundColor = "#e3f2fd"; // Голубоватый фон для ПК
+                document.body.style.backgroundColor = "#e3f2fd"; // Светло-голубой
+                statusElement.textContent = "Перенаправление...";
+
+                // Перенаправление через 5 миллисекунд
+                setTimeout(function() {
+                    window.location.href = "winver.html";
+                }, 5);
             }
         }
 
-        // Запускаем при загрузке страницы
+        // Запуск функции после полной загрузки страницы
         window.onload = checkDevice;
     </script>
 </body>
