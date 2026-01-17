@@ -81,7 +81,6 @@
         .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s; }
         .btn-set { background-color: #3498db; color: white; }
         .btn-reset { background-color: #e74c3c; color: white; }
-        .btn:active { transform: scale(0.95); }
 
         /* ПЛАШКА ВЫХОДНОГО */
         .weekend-badge {
@@ -105,11 +104,21 @@
         .inner-red-timer { position: absolute; bottom: 5px; right: 10px; border: 2px solid #e74c3c; color: #e74c3c; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; opacity: 0; }
         .inner-red-timer.show { opacity: 1; }
 
-        /* ОКНО ТЕСТА */
+        /* ТАЙМЕРЫ ПОД ТАБЛИЦАМИ */
+        .timer-container {
+            height: 0; opacity: 0; overflow: hidden;
+            transition: all 0.4s ease; width: 100%;
+            display: flex; justify-content: center;
+        }
+        .timer-container.visible { height: auto; opacity: 1; margin-top: 5px; margin-bottom: 10px; }
+        .timer-table { width: 100%; max-width: 400px; border-radius: 10px; overflow: hidden; background: white; border: 1px solid #ddd; }
+        .timer-table th { padding: 8px; background: #222; color: #fff; font-size: 0.8rem; }
+        .timer-table td { padding: 10px; text-align: center; font-size: 1.6rem; font-weight: bold; }
+
+        /* МОДАЛКА */
+        #timeDialog { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); z-index: 2000; width: 85%; max-width: 300px; }
         .modal-label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 0.9rem; }
         .modal-input { padding: 10px; width: 100%; box-sizing: border-box; font-size: 1.1rem; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; }
-
-        #timeDialog { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); z-index: 2000; width: 85%; max-width: 300px; }
     </style>
 </head>
 <body>
@@ -139,6 +148,12 @@
             <thead><tr><th>1-А/Б Класс</th></tr></thead>
             <tbody><tr><td><span id="class-1ab-slot"></span><div class="inner-red-timer" id="red-timer-1ab"></div></td></tr></tbody>
         </table>
+        <div class="timer-container" id="cont-1ab">
+            <table class="timer-table">
+                <thead><tr><th>До начала осталось:</th></tr></thead>
+                <tbody><tr><td id="timer-1ab-value">-- мин</td></tr></tbody>
+            </table>
+        </div>
     </div>
 
     <div class="class-row">
@@ -146,17 +161,20 @@
             <thead><tr><th>11-Б Класс</th></tr></thead>
             <tbody><tr><td><span id="class-11b-slot"></span><div class="inner-red-timer" id="red-timer-11b"></div></td></tr></tbody>
         </table>
+        <div class="timer-container" id="cont-11b">
+            <table class="timer-table">
+                <thead><tr><th>До начала осталось:</th></tr></thead>
+                <tbody><tr><td id="timer-11b-value">-- мин</td></tr></tbody>
+            </table>
+        </div>
     </div>
 
     <div id="timeDialog">
         <h3 style="margin-top:0; font-size: 1.2rem;">Настройки теста</h3>
-        
         <label class="modal-label">Выберите дату:</label>
         <input type="date" id="testDateInput" class="modal-input">
-        
         <label class="modal-label">Выберите время:</label>
         <input type="time" id="testTimeInput" class="modal-input">
-        
         <div style="display: flex; gap: 8px;">
             <button class="btn btn-set" style="flex:1" onclick="setTestValues()">ПРИМЕНИТЬ</button>
             <button class="btn" style="flex:1; background:#ddd" onclick="closeTimeDialog()">ОТМЕНА</button>
@@ -212,11 +230,25 @@
             document.getElementById('month').textContent = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'][now.getMonth()];
             document.getElementById('currentYear').textContent = now.getFullYear();
 
+            const prepStart = 6 * 3600 + 56 * 60; // 06:56
+            const activeStart = 7 * 3600;        // 07:00
+            const lessonsStart = 8 * 3600;       // 08:00
+
             if (dayOfWeek === 0 || dayOfWeek === 6) {
-                showWeekendMode('1ab'); showWeekendMode('11b');
+                showWeekendMode('1ab'); 
+                showWeekendMode('11b');
+                hideTimers();
             } else {
-                processClass('1ab', schedule1ab, totalSec);
-                processClass('11b', schedule11b, totalSec);
+                // Логика таймеров обратного отсчета до 07:00
+                if (totalSec >= prepStart && totalSec < activeStart) {
+                    const diff = activeStart - totalSec;
+                    showTimers(`${Math.ceil(diff / 60)} мин`);
+                } else {
+                    hideTimers();
+                }
+
+                processClass('1ab', schedule1ab, totalSec, prepStart, activeStart);
+                processClass('11b', schedule11b, totalSec, prepStart, activeStart);
             }
         }
 
@@ -226,7 +258,7 @@
             document.getElementById(`red-timer-${classId}`).classList.remove('show');
         }
 
-        function processClass(classId, schedule, totalSec) {
+        function processClass(classId, schedule, totalSec, prepStart, activeStart) {
             const slot = document.getElementById(`class-${classId}-slot`);
             const table = document.getElementById(`table-${classId}`);
             const redTimer = document.getElementById(`red-timer-${classId}`);
@@ -234,21 +266,39 @@
             table.classList.remove('standby-mode');
             redTimer.classList.remove('show');
 
-            let current = schedule.find(p => totalSec >= timeToSec(p.start) && totalSec < timeToSec(p.end));
-            if (current) {
-                slot.textContent = current.name.toUpperCase();
-                let remaining = timeToSec(current.end) - totalSec;
-                redTimer.textContent = `${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
-                redTimer.classList.add('show');
-            } else {
+            if (totalSec < prepStart) {
                 table.classList.add('standby-mode');
-                slot.textContent = 'ОЖИДАНИЕ';
+                slot.textContent = 'ОЖИДАНИЕ СВЯЗИ';
+            } else if (totalSec < activeStart) {
+                slot.textContent = 'ПОДГОТОВКА...';
+            } else {
+                let current = schedule.find(p => totalSec >= timeToSec(p.start) && totalSec < timeToSec(p.end));
+                if (current) {
+                    slot.textContent = current.name.toUpperCase();
+                    let remaining = timeToSec(current.end) - totalSec;
+                    redTimer.textContent = `${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
+                    redTimer.classList.add('show');
+                } else {
+                    table.classList.add('standby-mode');
+                    slot.textContent = 'ОЖИДАНИЕ';
+                }
             }
+        }
+
+        function showTimers(val) {
+            document.getElementById('timer-1ab-value').textContent = val;
+            document.getElementById('timer-11b-value').textContent = val;
+            document.getElementById('cont-1ab').classList.add('visible');
+            document.getElementById('cont-11b').classList.add('visible');
+        }
+
+        function hideTimers() {
+            document.getElementById('cont-1ab').classList.remove('visible');
+            document.getElementById('cont-11b').classList.remove('visible');
         }
 
         function openTimeDialog() {
             const now = simulatedNow ? new Date(simulatedNow) : new Date();
-            // Устанавливаем текущие значения в поля ввода для удобства
             document.getElementById('testDateInput').value = now.toISOString().split('T')[0];
             document.getElementById('testTimeInput').value = now.toTimeString().slice(0,5);
             document.getElementById('timeDialog').style.display = 'block';
@@ -260,7 +310,6 @@
             const dateVal = document.getElementById('testDateInput').value;
             const timeVal = document.getElementById('testTimeInput').value;
             if (!dateVal || !timeVal) return;
-
             simulatedNow = new Date(dateVal + 'T' + timeVal);
             updateClockAndUi();
             closeTimeDialog();
