@@ -13,12 +13,12 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* ШАПКА: Всегда сверху */
+        /* ШАПКА */
         .header {
             display: flex; 
             justify-content: space-between; 
             align-items: center;
-            padding: 20px 40px; 
+            padding: 15px 25px; 
             background-color: #fff; 
             width: 100%; 
             box-sizing: border-box;
@@ -33,113 +33,97 @@
             align-items: center;
             background-color: #e67e22;
             color: white;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 0.9rem;
-            gap: 10px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-            margin-bottom: 12px;
+            font-size: 0.85rem;
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
-        .signal-icon { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+        .signal-icon { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
         .signal-bar { width: 3px; background-color: white; border-radius: 1px; }
         .bar1 { height: 40%; }
         .bar2 { height: 70%; }
         .bar3 { height: 100%; }
 
         .date-block { display: flex; flex-direction: column; align-items: flex-start; }
-        .day-name { font-size: 1.8rem; font-weight: bold; color: #2c3e50; }
-        .day-month { font-size: 1.4rem; color: #7f8c8d; margin-top: 4px; }
-        #currentYear { font-size: 3rem; font-weight: bold; color: #2c3e50; }
+        .day-name { font-size: 1.5rem; font-weight: bold; color: #2c3e50; line-height: 1.1; }
+        .day-month { font-size: 1.2rem; color: #7f8c8d; }
+        #currentYear { font-size: 2.5rem; font-weight: bold; color: #2c3e50; }
 
-        /* ТАБЛИЧКА ВРЕМЕНИ */
+        /* ВРЕМЯ */
         #currentTime {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 20px auto 10px auto; /* Уменьшили нижний отступ */
+            margin: 15px auto 5px auto; /* Минимальный отступ снизу */
             background-color: #fff;
-            padding: 15px 25px;
+            padding: 10px 20px;
             border-radius: 14px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
             width: fit-content;
         }
-        .time-label { font-size: 1.1rem; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
-        .time-value { font-size: 3.2rem; color: #333; font-weight: bold; line-height: 1; }
+        .time-label { font-size: 1rem; color: #7f8c8d; font-weight: bold; text-transform: uppercase; }
+        .time-value { font-size: 3rem; color: #333; font-weight: bold; line-height: 1; }
 
-        /* КНОПКИ: По центру и ближе к времени */
+        /* КНОПКИ */
         .controls-container {
-            margin: 5px auto 20px auto; /* Сдвинули выше к блоку времени */
+            margin: 5px auto 10px auto; /* Вплотную к времени и к таблицам */
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             width: 100%; 
-            gap: 15px;
+            gap: 10px;
         }
         
-        /* КОММЕНТАРИЙ */
+        .btn-group { display: flex; gap: 8px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .btn-set { background-color: #3498db; color: white; }
+        .btn-reset { background-color: #e74c3c; color: white; }
+
         .comment-box {
-            background-color: #e67e22; color: white; padding: 12px 25px;
+            background-color: #e67e22; color: white; padding: 10px;
             border-radius: 8px; font-weight: bold; width: 90%; max-width: 500px;
-            transition: all 0.5s ease; opacity: 0;
-            display: flex; align-items: center; gap: 12px; justify-content: center;
-            box-sizing: border-box;
+            transition: all 0.5s ease; opacity: 0; display: none;
+            align-items: center; gap: 10px; justify-content: center;
+            font-size: 0.9rem;
         }
-        .comment-box.show { opacity: 1; }
+        .comment-box.show { opacity: 1; display: flex; }
 
-        .info-icon {
-            display: flex; align-items: center; justify-content: center;
-            width: 24px; height: 24px; border: 2px solid white; border-radius: 50%; 
-            font-size: 18px; font-weight: bold; flex-shrink: 0;
-            line-height: 0; padding-bottom: 2px;
-        }
-
-        /* ТАБЛИЦЫ КЛАССОВ */
+        /* ТАБЛИЦЫ КЛАССОВ - Сдвинуты выше */
         .class-row { 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            width: 90%; 
+            width: 92%; 
             max-width: 1100px; 
-            margin: 10px auto; 
+            margin: 5px auto; /* Минимальный зазор между рядами */
         }
 
         .class-table {
             width: 100%; border-collapse: collapse; background: white;
-            border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
-        .class-table th { padding: 16px; font-size: 1.3rem; color: white; background-color: #2c3e50; position: relative; }
-        .class-table td { padding: 20px; text-align: center; border: 1px solid #ddd; font-size: 1.2rem; height: 80px; font-weight: 500; position: relative; }
+        .class-table th { padding: 12px; font-size: 1.1rem; color: white; background-color: #2c3e50; position: relative; }
+        .class-table td { padding: 15px; text-align: center; border: 1px solid #eee; font-size: 1.1rem; height: 60px; font-weight: 500; position: relative; }
         .class-table.standby-mode th { background-color: #444444 !important; }
 
         /* ТАЙМЕРЫ ПОД ТАБЛИЦАМИ */
         .timer-container {
             height: 0; opacity: 0; overflow: hidden;
-            transition: all 0.5s ease; width: 100%;
+            transition: all 0.4s ease; width: 100%;
             display: flex; justify-content: center;
         }
-        .timer-container.visible { height: auto; opacity: 1; margin-top: 10px; }
-        .timer-table { width: 100%; max-width: 400px; border-radius: 10px; overflow: hidden; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
-        .timer-table th { padding: 10px; background: #222; color: #fff; font-size: 0.85rem; }
-        .timer-table td { padding: 15px; text-align: center; font-size: 1.8rem; font-weight: bold; }
+        .timer-container.visible { height: auto; opacity: 1; margin-top: 5px; margin-bottom: 10px; }
+        .timer-table { width: 100%; max-width: 400px; border-radius: 10px; overflow: hidden; background: white; border: 1px solid #ddd; }
+        .timer-table th { padding: 8px; background: #222; color: #fff; font-size: 0.8rem; }
+        .timer-table td { padding: 10px; text-align: center; font-size: 1.6rem; font-weight: bold; }
 
-        /* КНОПКИ ТЕСТА */
-        .btn-group { display: flex; gap: 10px; }
-        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-set { background-color: #3498db; color: white; }
-        .btn-reset { background-color: #e74c3c; color: white; }
-        .btn:active { transform: scale(0.95); }
-
-        /* ИНДИКАТОРЫ */
-        .status-container { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); display: none; }
-        .status-circle { width: 12px; height: 12px; border-radius: 50%; position: relative; }
-        .status-circle::before { content: ""; position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid inherit; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
-        .status-red .status-circle { background: #e74c3c; color: #e74c3c; }
-        .status-green .status-circle { background: #2ecc71; color: #2ecc71; }
-
-        .inner-red-timer { position: absolute; bottom: 8px; right: 12px; border: 2px solid #e74c3c; color: #e74c3c; padding: 2px 8px; border-radius: 4px; font-weight: bold; opacity: 0; }
+        .status-container { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: none; }
+        .status-circle { width: 10px; height: 10px; border-radius: 50%; position: relative; }
+        
+        .inner-red-timer { position: absolute; bottom: 5px; right: 10px; border: 2px solid #e74c3c; color: #e74c3c; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; opacity: 0; }
         .inner-red-timer.show { opacity: 1; }
     </style>
 </head>
@@ -176,7 +160,7 @@
         </table>
         <div class="timer-container" id="cont-1ab">
             <table class="timer-table">
-                <thead><tr><th>До начала информирования осталось:</th></tr></thead>
+                <thead><tr><th>До начала осталось:</th></tr></thead>
                 <tbody><tr><td id="timer-1ab-value">-- мин</td></tr></tbody>
             </table>
         </div>
@@ -189,16 +173,16 @@
         </table>
         <div class="timer-container" id="cont-11b">
             <table class="timer-table">
-                <thead><tr><th>До начала информирования осталось:</th></tr></thead>
+                <thead><tr><th>До начала осталось:</th></tr></thead>
                 <tbody><tr><td id="timer-11b-value">-- мин</td></tr></tbody>
             </table>
         </div>
     </div>
 
-    <div id="timeDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2000; width: 80%; max-width: 300px;">
-        <h3 style="margin-top:0">Установить время</h3>
-        <input type="time" id="testTimeInput" style="padding: 10px; width: 100%; box-sizing: border-box; font-size: 1.2rem;">
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
+    <div id="timeDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2000; width: 80%; max-width: 280px;">
+        <h3 style="margin-top:0; font-size: 1.1rem;">Установить время</h3>
+        <input type="time" id="testTimeInput" style="padding: 10px; width: 100%; box-sizing: border-box; font-size: 1.1rem;">
+        <div style="margin-top: 15px; display: flex; gap: 8px;">
             <button class="btn btn-set" style="flex:1" onclick="setTestTime()">OK</button>
             <button class="btn" style="flex:1; background:#ddd" onclick="closeTimeDialog()">ОТМЕНА</button>
         </div>
@@ -301,7 +285,7 @@
             if (totalSec < prepStart) {
                 table.classList.add('standby-mode'); slot.textContent = 'ОЖИДАНИЕ СВЯЗИ';
             } else if (totalSec < activeStart) {
-                slot.textContent = 'ПОДГОТОВКА ИНФОРМИРОВАНИЯ...';
+                slot.textContent = 'ПОДГОТОВКА...';
             } else {
                 let current = schedule.find(p => totalSec >= timeToSec(p.start) && totalSec < timeToSec(p.end));
                 if (current) {
