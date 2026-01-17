@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Потоковое информирование расписаний</title>
     <style>
         body {
@@ -13,6 +13,7 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
+        /* ШАПКА: Всегда сверху */
         .header {
             display: flex; 
             justify-content: space-between; 
@@ -41,17 +42,8 @@
             margin-bottom: 12px;
         }
 
-        .signal-icon {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 14px;
-        }
-        .signal-bar {
-            width: 3px;
-            background-color: white;
-            border-radius: 1px;
-        }
+        .signal-icon { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+        .signal-bar { width: 3px; background-color: white; border-radius: 1px; }
         .bar1 { height: 40%; }
         .bar2 { height: 70%; }
         .bar3 { height: 100%; }
@@ -61,30 +53,38 @@
         .day-month { font-size: 1.4rem; color: #7f8c8d; margin-top: 4px; }
         #currentYear { font-size: 3rem; font-weight: bold; color: #2c3e50; }
 
+        /* ТАБЛИЧКА ВРЕМЕНИ */
         #currentTime {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 30px auto;
+            margin: 20px auto 10px auto; /* Уменьшили нижний отступ */
             background-color: #fff;
             padding: 15px 25px;
             border-radius: 14px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
             width: fit-content;
         }
-        .time-label { font-size: 1.2rem; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .time-label { font-size: 1.1rem; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
         .time-value { font-size: 3.2rem; color: #333; font-weight: bold; line-height: 1; }
 
+        /* КНОПКИ: По центру и ближе к времени */
         .controls-container {
-            margin: 20px auto; display: flex; justify-content: space-between; 
-            align-items: center; width: 90%; max-width: 1100px; gap: 15px;
+            margin: 5px auto 20px auto; /* Сдвинули выше к блоку времени */
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%; 
+            gap: 15px;
         }
         
+        /* КОММЕНТАРИЙ */
         .comment-box {
             background-color: #e67e22; color: white; padding: 12px 25px;
-            border-radius: 8px; font-weight: bold; min-width: 350px; min-height: 24px;
+            border-radius: 8px; font-weight: bold; width: 90%; max-width: 500px;
             transition: all 0.5s ease; opacity: 0;
-            display: flex; align-items: center; gap: 12px;
+            display: flex; align-items: center; gap: 12px; justify-content: center;
+            box-sizing: border-box;
         }
         .comment-box.show { opacity: 1; }
 
@@ -92,117 +92,61 @@
             display: flex; align-items: center; justify-content: center;
             width: 24px; height: 24px; border: 2px solid white; border-radius: 50%; 
             font-size: 18px; font-weight: bold; flex-shrink: 0;
-            line-height: 0; padding-bottom: 2px; box-sizing: border-box;
+            line-height: 0; padding-bottom: 2px;
         }
 
-        /* КОНТЕЙНЕР ДЛЯ ТАБЛИЦЫ И ТАЙМЕРА ПОД НЕЙ */
+        /* ТАБЛИЦЫ КЛАССОВ */
         .class-row { 
             display: flex; 
-            flex-direction: column; /* Вертикальное расположение: таблица -> таймер */
+            flex-direction: column; 
             align-items: center; 
             width: 90%; 
             max-width: 1100px; 
-            margin: 8px auto 20px auto; 
+            margin: 10px auto; 
         }
 
         .class-table {
-            width: 100%; /* Таблица на всю ширину контейнера */
-            border-collapse: collapse; background: white;
+            width: 100%; border-collapse: collapse; background: white;
             border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .class-table th {
-            padding: 16px; font-size: 1.3rem; color: white; background-color: #2c3e50;
-            position: relative;
-        }
+        .class-table th { padding: 16px; font-size: 1.3rem; color: white; background-color: #2c3e50; position: relative; }
+        .class-table td { padding: 20px; text-align: center; border: 1px solid #ddd; font-size: 1.2rem; height: 80px; font-weight: 500; position: relative; }
         .class-table.standby-mode th { background-color: #444444 !important; }
-        .class-table td {
-            padding: 20px; text-align: center; border: 1px solid #ddd;
-            font-size: 1.2rem; height: 80px; font-weight: 500; position: relative;
-        }
 
-        /* СТИЛЬ ТАЙМЕРА ПОД ТАБЛИЦЕЙ */
+        /* ТАЙМЕРЫ ПОД ТАБЛИЦАМИ */
         .timer-container {
             height: 0; opacity: 0; overflow: hidden;
-            transition: all 0.5s ease-in-out; 
-            width: 100%;
-            display: flex;
-            justify-content: center;
+            transition: all 0.5s ease; width: 100%;
+            display: flex; justify-content: center;
         }
-        .timer-container.visible { 
-            height: auto; 
-            opacity: 1; 
-            margin-top: 10px; 
-            padding-bottom: 10px;
-        }
-
-        .timer-table {
-            width: 100%; /* Таймер тоже растягивается по ширине таблицы */
-            max-width: 400px; /* Но ограничиваем его, чтобы не был слишком длинным */
-            border-radius: 10px; overflow: hidden; border-collapse: collapse;
-            background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-        }
-        .timer-table th { padding: 12px; background: #222; color: #fff; font-size: 0.9rem; }
+        .timer-container.visible { height: auto; opacity: 1; margin-top: 10px; }
+        .timer-table { width: 100%; max-width: 400px; border-radius: 10px; overflow: hidden; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+        .timer-table th { padding: 10px; background: #222; color: #fff; font-size: 0.85rem; }
         .timer-table td { padding: 15px; text-align: center; font-size: 1.8rem; font-weight: bold; }
 
-        /* Остальные стили анимаций */
-        .status-container {
-            position: absolute; left: 20px; top: 50%;
-            transform: translateY(-50%); width: 30px; height: 30px;
-            display: none; align-items: center; justify-content: center;
-        }
-        .status-circle { width: 14px; height: 14px; border-radius: 50%; position: relative; }
-        .status-circle::before, .status-circle::after {
-            content: ""; position: absolute; top: 50%; left: 50%;
-            width: 100%; height: 100%; border-radius: 50%;
-            transform: translate(-50%, -50%); animation: antenna-pulse 2s infinite;
-        }
-        @keyframes antenna-pulse {
-            0% { width: 14px; height: 14px; opacity: 0.8; border-width: 2px; border-style: solid; }
-            100% { width: 50px; height: 50px; opacity: 0; border-width: 1px; border-style: solid; }
-        }
-        .status-red .status-circle { background-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
-        .status-red .status-circle::before, .status-red .status-circle::after { border-color: #e74c3c; }
-        .status-green .status-circle { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
-        .status-green .status-circle::before, .status-green .status-circle::after { border-color: #2ecc71; }
-        
-        .loading-circle {
-            display: inline-block; float: right; margin-left: 10px;
-            width: 22px; height: 22px; border-radius: 50%;
-            border-top: 3px solid white; border-right: 3px solid transparent;
-            animation: spin 1s linear infinite; opacity: 0;
-        }
-        @keyframes spin { to {transform: rotate(360deg);} }
-        .class-table.active-interval .loading-circle, .class-table.preparing .loading-circle { opacity: 1; }
-
-        .inner-red-timer {
-            position: absolute; bottom: 10px; right: 15px;
-            border: 3px solid #e74c3c; color: #e74c3c;
-            padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 1.1rem;
-            opacity: 0; transition: all 0.5s ease;
-        }
-        .inner-red-timer.show { opacity: 1; }
-
-        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .btn-set { background-color: #3498db; color: white; margin-right: 10px; }
+        /* КНОПКИ ТЕСТА */
+        .btn-group { display: flex; gap: 10px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-set { background-color: #3498db; color: white; }
         .btn-reset { background-color: #e74c3c; color: white; }
+        .btn:active { transform: scale(0.95); }
 
-        @media (max-width: 768px) {
-            .controls-container { flex-direction: column; }
-            .comment-box { min-width: 90%; }
-        }
+        /* ИНДИКАТОРЫ */
+        .status-container { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); display: none; }
+        .status-circle { width: 12px; height: 12px; border-radius: 50%; position: relative; }
+        .status-circle::before { content: ""; position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid inherit; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
+        .status-red .status-circle { background: #e74c3c; color: #e74c3c; }
+        .status-green .status-circle { background: #2ecc71; color: #2ecc71; }
+
+        .inner-red-timer { position: absolute; bottom: 8px; right: 12px; border: 2px solid #e74c3c; color: #e74c3c; padding: 2px 8px; border-radius: 4px; font-weight: bold; opacity: 0; }
+        .inner-red-timer.show { opacity: 1; }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="date-block">
-            <div class="mobile-version-badge">
-                Mobile version
-                <div class="signal-icon">
-                    <div class="signal-bar bar1"></div>
-                    <div class="signal-bar bar2"></div>
-                    <div class="signal-bar bar3"></div>
-                </div>
-            </div>
+            <div class="mobile-version-badge">Mobile version <div class="signal-icon"><div class="signal-bar bar1"></div><div class="signal-bar bar2"></div><div class="signal-bar bar3"></div></div></div>
             <div id="dayName" class="day-name"></div>
             <div class="day-month"><span id="dayDate"></span> <span id="month"></span></div>
         </div>
@@ -215,26 +159,19 @@
     </div>
 
     <div class="controls-container">
+        <div class="btn-group">
+            <button class="btn btn-set" onclick="openTimeDialog()">ТЕСТ</button>
+            <button class="btn btn-reset" onclick="resetToLocalTime()">СБРОС</button>
+        </div>
         <div id="commentBox" class="comment-box">
             <div class="info-icon">!</div>
             <span id="commentText"></span>
-        </div>
-        <div>
-            <button class="btn btn-set" onclick="openTimeDialog()">Тест</button>
-            <button class="btn btn-reset" onclick="resetToLocalTime()">Сброс</button>
         </div>
     </div>
 
     <div class="class-row">
         <table class="class-table" id="table-1ab">
-            <thead>
-                <tr>
-                    <th>
-                        <div class="status-container" id="status-1ab"><div class="status-circle"></div></div>
-                        1-А/Б Класс<span class="loading-circle"></span>
-                    </th>
-                </tr>
-            </thead>
+            <thead><tr><th><div class="status-container" id="status-1ab"><div class="status-circle"></div></div>1-А/Б Класс</th></tr></thead>
             <tbody><tr><td><span id="class-1ab-slot"></span><div class="inner-red-timer" id="red-timer-1ab"></div></td></tr></tbody>
         </table>
         <div class="timer-container" id="cont-1ab">
@@ -247,14 +184,7 @@
 
     <div class="class-row">
         <table class="class-table" id="table-11b">
-            <thead>
-                <tr>
-                    <th>
-                        <div class="status-container" id="status-11b"><div class="status-circle"></div></div>
-                        11-Б Класс<span class="loading-circle"></span>
-                    </th>
-                </tr>
-            </thead>
+            <thead><tr><th><div class="status-container" id="status-11b"><div class="status-circle"></div></div>11-Б Класс</th></tr></thead>
             <tbody><tr><td><span id="class-11b-slot"></span><div class="inner-red-timer" id="red-timer-11b"></div></td></tr></tbody>
         </table>
         <div class="timer-container" id="cont-11b">
@@ -266,16 +196,15 @@
     </div>
 
     <div id="timeDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2000; width: 80%; max-width: 300px;">
-        <h3 style="margin-top:0">Время</h3>
-        <input type="time" id="testTimeInput" style="padding: 10px; width: 100%; box-sizing: border-box;">
+        <h3 style="margin-top:0">Установить время</h3>
+        <input type="time" id="testTimeInput" style="padding: 10px; width: 100%; box-sizing: border-box; font-size: 1.2rem;">
         <div style="margin-top: 20px; display: flex; gap: 10px;">
-            <button class="btn btn-set" onclick="setTestTime()">OK</button>
-            <button class="btn" onclick="closeTimeDialog()">Отмена</button>
+            <button class="btn btn-set" style="flex:1" onclick="setTestTime()">OK</button>
+            <button class="btn" style="flex:1; background:#ddd" onclick="closeTimeDialog()">ОТМЕНА</button>
         </div>
     </div>
 
     <script>
-        // Логика остается прежней
         let simulatedNow = null;
 
         const schedule1ab = [
@@ -313,14 +242,6 @@
             return h * 3600 + m * 60;
         }
 
-        function toggleTimerVisibility(show) {
-            const containers = [document.getElementById('cont-1ab'), document.getElementById('cont-11b')];
-            containers.forEach(c => {
-                if (show) c.classList.add('visible');
-                else c.classList.remove('visible');
-            });
-        }
-
         function updateClockAndUi() {
             const now = simulatedNow ? new Date(simulatedNow) : new Date();
             const dayOfWeek = now.getDay();
@@ -334,7 +255,7 @@
 
             const commentBox = document.getElementById('commentBox');
             if (totalSec >= timeToSec('08:35') && totalSec < timeToSec('08:55')) {
-                document.getElementById('commentText').textContent = "Предположительно, первоклассники сейчас завтракают в столовой";
+                document.getElementById('commentText').textContent = "Первоклассники завтракают";
                 commentBox.classList.add('show');
             } else {
                 commentBox.classList.remove('show');
@@ -347,15 +268,15 @@
                 const diff = activeStart - totalSec;
                 document.getElementById('timer-1ab-value').textContent = 
                 document.getElementById('timer-11b-value').textContent = `${Math.ceil(diff / 60)} мин`;
-                toggleTimerVisibility(true);
+                document.getElementById('cont-1ab').classList.add('visible');
+                document.getElementById('cont-11b').classList.add('visible');
             } else {
-                toggleTimerVisibility(false);
+                document.getElementById('cont-1ab').classList.remove('visible');
+                document.getElementById('cont-11b').classList.remove('visible');
             }
 
             if (dayOfWeek === 0 || dayOfWeek === 6) {
-                showWeekendMode('1ab');
-                showWeekendMode('11b');
-                toggleTimerVisibility(false);
+                showWeekendMode('1ab'); showWeekendMode('11b');
             } else {
                 processClass('1ab', schedule1ab, totalSec, activeStart, 8 * 3600, prepStart);
                 processClass('11b', schedule11b, totalSec, activeStart, 8 * 3600, prepStart);
@@ -363,12 +284,8 @@
         }
 
         function showWeekendMode(classId) {
-            const slot = document.getElementById(`class-${classId}-slot`);
-            const table = document.getElementById(`table-${classId}`);
-            const redTimer = document.getElementById(`red-timer-${classId}`);
-            table.classList.add('standby-mode');
-            slot.textContent = 'ВЫХОДНОЙ ДЕНЬ';
-            redTimer.classList.remove('show');
+            document.getElementById(`class-${classId}-slot`).textContent = 'ВЫХОДНОЙ ДЕНЬ';
+            document.getElementById(`table-${classId}`).classList.add('standby-mode');
         }
 
         function processClass(classId, schedule, totalSec, activeStart, activeEnd, prepStart) {
@@ -377,44 +294,29 @@
             const redTimer = document.getElementById(`red-timer-${classId}`);
             const statusBox = document.getElementById(`status-${classId}`);
             
-            table.classList.remove('preparing', 'active-interval', 'standby-mode');
+            table.classList.remove('standby-mode');
             redTimer.classList.remove('show');
             statusBox.style.display = 'none';
 
             if (totalSec < prepStart) {
-                table.classList.add('standby-mode'); 
-                slot.textContent = 'ОЖИДАНИЕ УСТАНОВКИ СВЯЗИ С СЕРВЕРОМ';
+                table.classList.add('standby-mode'); slot.textContent = 'ОЖИДАНИЕ СВЯЗИ';
             } else if (totalSec < activeStart) {
-                table.classList.add('preparing');
-                slot.innerHTML = 'ПОДГОТОВКА ПОТОКОВОГО ИНФОРМИРОВАНИЯ...';
-            } else if (totalSec < activeEnd) {
-                table.classList.add('active-interval');
-                slot.textContent = 'ПОДГОТОВКА К УРОКУ №1';
-                const remaining = activeEnd - totalSec;
-                redTimer.textContent = formatTime(remaining);
-                redTimer.classList.add('show');
+                slot.textContent = 'ПОДГОТОВКА ИНФОРМИРОВАНИЯ...';
             } else {
-                let currentPeriod = schedule.find(p => totalSec >= timeToSec(p.start) && totalSec < timeToSec(p.end));
-                if (currentPeriod) {
-                    slot.textContent = currentPeriod.name.toUpperCase();
-                    const remaining = timeToSec(currentPeriod.end) - totalSec;
-                    redTimer.textContent = formatTime(remaining);
+                let current = schedule.find(p => totalSec >= timeToSec(p.start) && totalSec < timeToSec(p.end));
+                if (current) {
+                    slot.textContent = current.name.toUpperCase();
+                    redTimer.textContent = formatTime(timeToSec(current.end) - totalSec);
                     redTimer.classList.add('show');
                     statusBox.style.display = 'flex';
-                    statusBox.className = currentPeriod.name.includes('Перемена') ? 'status-container status-green' : 'status-container status-red';
+                    statusBox.className = current.name.includes('Перемена') ? 'status-container status-green' : 'status-container status-red';
                 } else {
-                    table.classList.add('standby-mode');
-                    slot.textContent = 'СИСТЕМА В РЕЖИМЕ ОЖИДАНИЯ';
+                    table.classList.add('standby-mode'); slot.textContent = 'ОЖИДАНИЕ';
                 }
             }
         }
 
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = seconds % 60;
-            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
-
+        function formatTime(s) { return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
         function openTimeDialog() { document.getElementById('timeDialog').style.display = 'block'; }
         function closeTimeDialog() { document.getElementById('timeDialog').style.display = 'none'; }
         function setTestTime() {
@@ -422,8 +324,7 @@
             if (!val) return;
             const [h, m] = val.split(':').map(Number);
             simulatedNow = new Date(); simulatedNow.setHours(h, m, 0);
-            updateClockAndUi();
-            closeTimeDialog();
+            updateClockAndUi(); closeTimeDialog();
         }
         function resetToLocalTime() { simulatedNow = null; updateClockAndUi(); }
         setInterval(() => { if (simulatedNow) simulatedNow = new Date(simulatedNow.getTime() + 1000); updateClockAndUi(); }, 1000);
