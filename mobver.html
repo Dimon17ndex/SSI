@@ -61,17 +61,16 @@
         .day-month { font-size: 1.4rem; color: #7f8c8d; margin-top: 4px; }
         #currentYear { font-size: 3rem; font-weight: bold; color: #2c3e50; }
 
-        /* --- ИЗМЕНЕННЫЙ БЛОК ВРЕМЕНИ --- */
         #currentTime {
             display: flex;
-            flex-direction: column; /* Текст в колонку */
+            flex-direction: column;
             align-items: center;
             margin: 30px auto;
             background-color: #fff;
-            padding: 15px 25px; /* Уменьшили отступы для компактности */
+            padding: 15px 25px;
             border-radius: 14px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            width: fit-content; /* Ширина строго по контенту */
+            width: fit-content;
         }
         .time-label {
             font-size: 1.2rem;
@@ -86,7 +85,6 @@
             font-weight: bold;
             line-height: 1;
         }
-        /* ------------------------------- */
 
         .controls-container {
             margin: 20px auto; display: flex; justify-content: space-between; 
@@ -268,12 +266,18 @@
         </div>
     </div>
 
-    <div id="timeDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2000; width: 80%; max-width: 300px;">
-        <h3 style="margin-top:0">Время</h3>
-        <input type="time" id="testTimeInput" style="padding: 10px; width: 100%; box-sizing: border-box;">
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
-            <button class="btn btn-set" onclick="setTestTime()">OK</button>
-            <button class="btn" onclick="closeTimeDialog()">Отмена</button>
+    <div id="timeDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2000; width: 85%; max-width: 320px;">
+        <h3 style="margin-top:0; color:#2c3e50;">Тестовые настройки</h3>
+        
+        <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:#7f8c8d;">Выберите дату:</label>
+        <input type="date" id="testDateInput" style="padding: 10px; width: 100%; box-sizing: border-box; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px;">
+        
+        <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:#7f8c8d;">Выберите время:</label>
+        <input type="time" id="testTimeInput" style="padding: 10px; width: 100%; box-sizing: border-box; border: 1px solid #ddd; border-radius: 5px;">
+        
+        <div style="margin-top: 25px; display: flex; gap: 10px;">
+            <button class="btn btn-set" style="flex:1" onclick="setTestTime()">Применить</button>
+            <button class="btn" style="flex:1; background:#eee;" onclick="closeTimeDialog()">Отмена</button>
         </div>
     </div>
 
@@ -327,7 +331,6 @@
             const now = simulatedNow ? new Date(simulatedNow) : new Date();
             const totalSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-            // Обновляем только значение времени
             document.getElementById('timeValue').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
             
             document.getElementById('dayName').textContent = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'][now.getDay()];
@@ -344,7 +347,7 @@
             }
 
             const prepStart = 6 * 3600 + 56 * 60; 
-            const activeStart = 7 * 3600;           
+            const activeStart = 7 * 3600;            
 
             if (totalSec >= prepStart && totalSec < activeStart) {
                 const diff = activeStart - totalSec;
@@ -408,18 +411,48 @@
             return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }
 
-        function openTimeDialog() { document.getElementById('timeDialog').style.display = 'block'; }
+        // ОБНОВЛЕННЫЕ ФУНКЦИИ ДЛЯ ТЕСТОВОГО РЕЖИМА
+        function openTimeDialog() {
+            const dialog = document.getElementById('timeDialog');
+            const now = simulatedNow ? new Date(simulatedNow) : new Date();
+            
+            // Установка текущей даты и времени в инпуты при открытии
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            document.getElementById('testDateInput').value = dateStr;
+            document.getElementById('testTimeInput').value = timeStr;
+            
+            dialog.style.display = 'block';
+        }
+
         function closeTimeDialog() { document.getElementById('timeDialog').style.display = 'none'; }
+
         function setTestTime() {
-            const val = document.getElementById('testTimeInput').value;
-            if (!val) return;
-            const [h, m] = val.split(':').map(Number);
-            simulatedNow = new Date(); simulatedNow.setHours(h, m, 0);
+            const dateVal = document.getElementById('testDateInput').value;
+            const timeVal = document.getElementById('testTimeInput').value;
+            
+            if (!dateVal || !timeVal) return;
+
+            const [year, month, day] = dateVal.split('-').map(Number);
+            const [h, m] = timeVal.split(':').map(Number);
+            
+            // Создаем новую дату на основе ввода (month - 1 т.к. в JS месяцы от 0 до 11)
+            simulatedNow = new Date(year, month - 1, day, h, m, 0);
+            
             updateClockAndUi();
             closeTimeDialog();
         }
+
         function resetToLocalTime() { simulatedNow = null; updateClockAndUi(); }
-        setInterval(() => { if (simulatedNow) simulatedNow = new Date(simulatedNow.getTime() + 1000); updateClockAndUi(); }, 1000);
+
+        setInterval(() => { 
+            if (simulatedNow) {
+                simulatedNow = new Date(simulatedNow.getTime() + 1000);
+            }
+            updateClockAndUi(); 
+        }, 1000);
+
         updateClockAndUi();
     </script>
 </body>
