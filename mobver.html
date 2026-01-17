@@ -61,32 +61,19 @@
         .day-month { font-size: 1.4rem; color: #7f8c8d; margin-top: 4px; }
         #currentYear { font-size: 3rem; font-weight: bold; color: #2c3e50; }
 
-        /* --- ИЗМЕНЕННЫЙ БЛОК ВРЕМЕНИ --- */
         #currentTime {
             display: flex;
-            flex-direction: column; /* Текст в колонку */
+            flex-direction: column;
             align-items: center;
             margin: 30px auto;
             background-color: #fff;
-            padding: 15px 25px; /* Уменьшили отступы для компактности */
+            padding: 15px 25px;
             border-radius: 14px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            width: fit-content; /* Ширина строго по контенту */
+            width: fit-content;
         }
-        .time-label {
-            font-size: 1.2rem;
-            color: #7f8c8d;
-            font-weight: bold;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        .time-value {
-            font-size: 3.2rem;
-            color: #333;
-            font-weight: bold;
-            line-height: 1;
-        }
-        /* ------------------------------- */
+        .time-label { font-size: 1.2rem; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .time-value { font-size: 3.2rem; color: #333; font-weight: bold; line-height: 1; }
 
         .controls-container {
             margin: 20px auto; display: flex; justify-content: space-between; 
@@ -108,18 +95,67 @@
             line-height: 0; padding-bottom: 2px; box-sizing: border-box;
         }
 
+        /* КОНТЕЙНЕР ДЛЯ ТАБЛИЦЫ И ТАЙМЕРА ПОД НЕЙ */
+        .class-row { 
+            display: flex; 
+            flex-direction: column; /* Вертикальное расположение: таблица -> таймер */
+            align-items: center; 
+            width: 90%; 
+            max-width: 1100px; 
+            margin: 8px auto 20px auto; 
+        }
+
+        .class-table {
+            width: 100%; /* Таблица на всю ширину контейнера */
+            border-collapse: collapse; background: white;
+            border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .class-table th {
+            padding: 16px; font-size: 1.3rem; color: white; background-color: #2c3e50;
+            position: relative;
+        }
+        .class-table.standby-mode th { background-color: #444444 !important; }
+        .class-table td {
+            padding: 20px; text-align: center; border: 1px solid #ddd;
+            font-size: 1.2rem; height: 80px; font-weight: 500; position: relative;
+        }
+
+        /* СТИЛЬ ТАЙМЕРА ПОД ТАБЛИЦЕЙ */
+        .timer-container {
+            height: 0; opacity: 0; overflow: hidden;
+            transition: all 0.5s ease-in-out; 
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .timer-container.visible { 
+            height: auto; 
+            opacity: 1; 
+            margin-top: 10px; 
+            padding-bottom: 10px;
+        }
+
+        .timer-table {
+            width: 100%; /* Таймер тоже растягивается по ширине таблицы */
+            max-width: 400px; /* Но ограничиваем его, чтобы не был слишком длинным */
+            border-radius: 10px; overflow: hidden; border-collapse: collapse;
+            background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+        .timer-table th { padding: 12px; background: #222; color: #fff; font-size: 0.9rem; }
+        .timer-table td { padding: 15px; text-align: center; font-size: 1.8rem; font-weight: bold; }
+
+        /* Остальные стили анимаций */
         .status-container {
             position: absolute; left: 20px; top: 50%;
             transform: translateY(-50%); width: 30px; height: 30px;
             display: none; align-items: center; justify-content: center;
         }
-        .status-circle { width: 14px; height: 14px; border-radius: 50%; position: relative; z-index: 2; }
+        .status-circle { width: 14px; height: 14px; border-radius: 50%; position: relative; }
         .status-circle::before, .status-circle::after {
             content: ""; position: absolute; top: 50%; left: 50%;
             width: 100%; height: 100%; border-radius: 50%;
-            transform: translate(-50%, -50%); animation: antenna-pulse 2s infinite; z-index: 1;
+            transform: translate(-50%, -50%); animation: antenna-pulse 2s infinite;
         }
-        .status-circle::after { animation-delay: 1s; }
         @keyframes antenna-pulse {
             0% { width: 14px; height: 14px; opacity: 0.8; border-width: 2px; border-style: solid; }
             100% { width: 50px; height: 50px; opacity: 0; border-width: 1px; border-style: solid; }
@@ -129,69 +165,30 @@
         .status-green .status-circle { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
         .status-green .status-circle::before, .status-green .status-circle::after { border-color: #2ecc71; }
         
-        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap; }
-        .btn-set { background-color: #3498db; color: white; margin-right: 10px; }
-        .btn-reset { background-color: #e74c3c; color: white; }
-
-        .class-row { display: flex; align-items: stretch; width: 90%; max-width: 1100px; margin: 8px auto; }
-        .class-table {
-            flex: 1; border-collapse: collapse; background: white;
-            border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: all 0.5s ease-in-out;
+        .loading-circle {
+            display: inline-block; float: right; margin-left: 10px;
+            width: 22px; height: 22px; border-radius: 50%;
+            border-top: 3px solid white; border-right: 3px solid transparent;
+            animation: spin 1s linear infinite; opacity: 0;
         }
-        .class-table th {
-            padding: 16px; font-size: 1.3rem; color: white; background-color: #2c3e50;
-            transition: background-color 0.8s ease; position: relative;
-        }
-        .class-table.standby-mode th { background-color: #444444 !important; }
-
-        .class-table td {
-            padding: 20px; text-align: center; border: 1px solid #ddd;
-            font-size: 1.2rem; height: 80px; font-weight: 500; position: relative;
-        }
+        @keyframes spin { to {transform: rotate(360deg);} }
+        .class-table.active-interval .loading-circle, .class-table.preparing .loading-circle { opacity: 1; }
 
         .inner-red-timer {
             position: absolute; bottom: 10px; right: 15px;
             border: 3px solid #e74c3c; color: #e74c3c;
             padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 1.1rem;
-            opacity: 0; transform: translateY(5px); transition: all 0.5s ease;
+            opacity: 0; transition: all 0.5s ease;
         }
-        .inner-red-timer.is-break { border-color: #2ecc71; color: #2ecc71; }
-        .inner-red-timer.is-preparing { border-color: #3498db; color: #3498db; }
-        .inner-red-timer.show { opacity: 1; transform: translateY(0); }
+        .inner-red-timer.show { opacity: 1; }
 
-        .timer-container {
-            width: 0; max-width: 0; opacity: 0; overflow: hidden;
-            transition: all 0.5s ease-in-out; display: flex;
-        }
-        .timer-container.visible { width: 300px; max-width: 300px; opacity: 1; margin-left: 15px; }
-
-        .timer-table {
-            width: 280px; border-radius: 10px; overflow: hidden; border-collapse: collapse;
-            background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.08); flex-shrink: 0;
-        }
-        .timer-table th { padding: 12px; background: #222; color: #fff; font-size: 0.9rem; }
-        .timer-table td { padding: 20px; text-align: center; font-size: 1.8rem; font-weight: bold; }
-
-        .loading-circle {
-            display: inline-block; float: right; margin-left: 10px;
-            width: 22px; height: 22px; border-radius: 50%;
-            border-top: 3px solid white; border-right: 3px solid transparent;
-            animation: spin 1s linear infinite; opacity: 0; transition: opacity 0.5s;
-        }
-        @keyframes spin { to {transform: rotate(360deg);} }
-
-        .class-table.active-interval th { background-color: #3498db !important; }
-        .class-table.preparing th { background-color: #2c3e50 !important; }
-        .class-table.active-interval .loading-circle,
-        .class-table.preparing .loading-circle { opacity: 1; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-set { background-color: #3498db; color: white; margin-right: 10px; }
+        .btn-reset { background-color: #e74c3c; color: white; }
 
         @media (max-width: 768px) {
-            .controls-container { flex-direction: column; width: 95%; }
-            .comment-box { min-width: 90%; font-size: 0.9rem; padding: 10px 15px; }
-            .class-row { flex-direction: column; width: 95%; }
-            .timer-container.visible { width: 100%; max-width: 100%; margin-left: 0; margin-top: 10px; }
-            .header { padding: 10px 20px; }
+            .controls-container { flex-direction: column; }
+            .comment-box { min-width: 90%; }
         }
     </style>
 </head>
@@ -278,6 +275,7 @@
     </div>
 
     <script>
+        // Логика остается прежней
         let simulatedNow = null;
 
         const schedule1ab = [
@@ -325,12 +323,11 @@
 
         function updateClockAndUi() {
             const now = simulatedNow ? new Date(simulatedNow) : new Date();
+            const dayOfWeek = now.getDay();
             const totalSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-            // Обновляем только значение времени
             document.getElementById('timeValue').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-            
-            document.getElementById('dayName').textContent = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'][now.getDay()];
+            document.getElementById('dayName').textContent = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'][dayOfWeek];
             document.getElementById('dayDate').textContent = now.getDate();
             document.getElementById('month').textContent = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'][now.getMonth()];
             document.getElementById('currentYear').textContent = now.getFullYear();
@@ -355,8 +352,23 @@
                 toggleTimerVisibility(false);
             }
 
-            processClass('1ab', schedule1ab, totalSec, activeStart, 8 * 3600, prepStart);
-            processClass('11b', schedule11b, totalSec, activeStart, 8 * 3600, prepStart);
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                showWeekendMode('1ab');
+                showWeekendMode('11b');
+                toggleTimerVisibility(false);
+            } else {
+                processClass('1ab', schedule1ab, totalSec, activeStart, 8 * 3600, prepStart);
+                processClass('11b', schedule11b, totalSec, activeStart, 8 * 3600, prepStart);
+            }
+        }
+
+        function showWeekendMode(classId) {
+            const slot = document.getElementById(`class-${classId}-slot`);
+            const table = document.getElementById(`table-${classId}`);
+            const redTimer = document.getElementById(`red-timer-${classId}`);
+            table.classList.add('standby-mode');
+            slot.textContent = 'ВЫХОДНОЙ ДЕНЬ';
+            redTimer.classList.remove('show');
         }
 
         function processClass(classId, schedule, totalSec, activeStart, activeEnd, prepStart) {
@@ -366,7 +378,7 @@
             const statusBox = document.getElementById(`status-${classId}`);
             
             table.classList.remove('preparing', 'active-interval', 'standby-mode');
-            redTimer.classList.remove('show', 'is-preparing', 'is-break');
+            redTimer.classList.remove('show');
             statusBox.style.display = 'none';
 
             if (totalSec < prepStart) {
@@ -380,7 +392,7 @@
                 slot.textContent = 'ПОДГОТОВКА К УРОКУ №1';
                 const remaining = activeEnd - totalSec;
                 redTimer.textContent = formatTime(remaining);
-                redTimer.classList.add('show', 'is-preparing');
+                redTimer.classList.add('show');
             } else {
                 let currentPeriod = schedule.find(p => totalSec >= timeToSec(p.start) && totalSec < timeToSec(p.end));
                 if (currentPeriod) {
@@ -389,12 +401,7 @@
                     redTimer.textContent = formatTime(remaining);
                     redTimer.classList.add('show');
                     statusBox.style.display = 'flex';
-                    if (currentPeriod.name.includes('Перемена')) {
-                        redTimer.classList.add('is-break');
-                        statusBox.className = 'status-container status-green';
-                    } else {
-                        statusBox.className = 'status-container status-red';
-                    }
+                    statusBox.className = currentPeriod.name.includes('Перемена') ? 'status-container status-green' : 'status-container status-red';
                 } else {
                     table.classList.add('standby-mode');
                     slot.textContent = 'СИСТЕМА В РЕЖИМЕ ОЖИДАНИЯ';
