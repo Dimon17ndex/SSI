@@ -236,7 +236,10 @@
     </div>
 
     <div id="timeDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; width: 80%; max-width: 300px;">
-        <h3 style="margin-top:0">Время</h3>
+        <h3 style="margin-top:0">Настройка теста</h3>
+        <label style="display:block; margin-bottom: 5px; font-size: 0.9rem;">Дата:</label>
+        <input type="date" id="testDateInput" style="padding: 10px; width: 100%; box-sizing: border-box; margin-bottom: 15px;">
+        <label style="display:block; margin-bottom: 5px; font-size: 0.9rem;">Время:</label>
         <input type="time" id="testTimeInput" style="padding: 10px; width: 100%; box-sizing: border-box;">
         <div style="margin-top: 20px; display: flex; gap: 10px;">
             <button class="btn btn-set" onclick="setTestTime()">OK</button>
@@ -311,7 +314,7 @@
             }
 
             const prepStart = 6 * 3600 + 56 * 60; 
-            const activeStart = 7 * 3600;           
+            const activeStart = 7 * 3600;            
             const activeEnd = 8 * 3600;  
 
             if (totalSec >= prepStart && totalSec < activeStart) {
@@ -378,18 +381,36 @@
             return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }
 
-        function openTimeDialog() { document.getElementById('timeDialog').style.display = 'block'; }
+        /* ОБНОВЛЕННЫЕ ФУНКЦИИ ТЕСТИРОВАНИЯ */
+        function openTimeDialog() { 
+            const now = simulatedNow ? new Date(simulatedNow) : new Date();
+            // Подставляем текущую дату и время в поля ввода
+            document.getElementById('testDateInput').value = now.toISOString().split('T')[0];
+            document.getElementById('testTimeInput').value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            document.getElementById('timeDialog').style.display = 'block'; 
+        }
+
         function closeTimeDialog() { document.getElementById('timeDialog').style.display = 'none'; }
+
         function setTestTime() {
-            const val = document.getElementById('testTimeInput').value;
-            if (!val) return;
-            const [h, m] = val.split(':').map(Number);
-            simulatedNow = new Date(); simulatedNow.setHours(h, m, 0);
+            const dateVal = document.getElementById('testDateInput').value;
+            const timeVal = document.getElementById('testTimeInput').value;
+            if (!dateVal || !timeVal) return;
+
+            const [year, month, day] = dateVal.split('-').map(Number);
+            const [h, m] = timeVal.split(':').map(Number);
+            
+            simulatedNow = new Date(year, month - 1, day, h, m, 0);
             updateClockAndUi();
             closeTimeDialog();
         }
+
         function resetToLocalTime() { simulatedNow = null; updateClockAndUi(); }
-        setInterval(() => { if (simulatedNow) simulatedNow = new Date(simulatedNow.getTime() + 1000); updateClockAndUi(); }, 1000);
+
+        setInterval(() => { 
+            if (simulatedNow) simulatedNow = new Date(simulatedNow.getTime() + 1000); 
+            updateClockAndUi(); 
+        }, 1000);
         updateClockAndUi();
     </script>
 </body>
