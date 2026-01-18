@@ -313,7 +313,8 @@
                 commentBox.classList.remove('show');
             }
 
-            const prepStart = 6 * 3600 + 56 * 60; 
+            // ИЗМЕНЕНО: Начало с 06:55 (вместо 6:56)
+            const prepStart = 6 * 3600 + 55 * 60; 
             const activeStart = 7 * 3600;            
             const activeEnd = 8 * 3600;  
 
@@ -381,10 +382,8 @@
             return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }
 
-        /* ОБНОВЛЕННЫЕ ФУНКЦИИ ТЕСТИРОВАНИЯ */
         function openTimeDialog() { 
             const now = simulatedNow ? new Date(simulatedNow) : new Date();
-            // Подставляем текущую дату и время в поля ввода
             document.getElementById('testDateInput').value = now.toISOString().split('T')[0];
             document.getElementById('testTimeInput').value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             document.getElementById('timeDialog').style.display = 'block'; 
@@ -396,10 +395,8 @@
             const dateVal = document.getElementById('testDateInput').value;
             const timeVal = document.getElementById('testTimeInput').value;
             if (!dateVal || !timeVal) return;
-
             const [year, month, day] = dateVal.split('-').map(Number);
             const [h, m] = timeVal.split(':').map(Number);
-            
             simulatedNow = new Date(year, month - 1, day, h, m, 0);
             updateClockAndUi();
             closeTimeDialog();
