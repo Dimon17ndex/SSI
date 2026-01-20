@@ -47,11 +47,7 @@
             gap: 2px;
             height: 14px;
         }
-        .signal-bar {
-            width: 3px;
-            background-color: white;
-            border-radius: 1px;
-        }
+        .signal-bar { width: 3px; background-color: white; border-radius: 1px; }
         .bar1 { height: 40%; }
         .bar2 { height: 70%; }
         .bar3 { height: 100%; }
@@ -72,19 +68,8 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
             width: fit-content;
         }
-        .time-label {
-            font-size: 1.2rem;
-            color: #7f8c8d;
-            font-weight: bold;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        .time-value {
-            font-size: 3.2rem;
-            color: #333;
-            font-weight: bold;
-            line-height: 1;
-        }
+        .time-label { font-size: 1.2rem; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .time-value { font-size: 3.2rem; color: #333; font-weight: bold; line-height: 1; }
 
         .controls-container {
             margin: 20px auto; display: flex; justify-content: space-between; 
@@ -141,12 +126,12 @@
             padding: 16px; font-size: 1.3rem; color: white; background-color: #2c3e50;
             transition: background-color 0.8s ease; position: relative;
         }
-        .class-table.standby-mode th { background-color: #444444 !important; }
-        /* Шапка синяя только если есть класс active-interval и НЕТ класса остаточного урока */
+        /* Стандартный цвет активного информирования (голубой) */
         .class-table.active-interval th { background-color: #3498db !important; }
-        .class-table.preparing th { background-color: #2c3e50 !important; }
-        /* Специальное правило: если это остаток урока (blue-timer), возвращаем шапке стандартный цвет */
-        .class-table.residual-lesson th { background-color: #2c3e50 !important; }
+        /* ПРИНУДИТЕЛЬНЫЙ ТЕМНО-СИНИЙ для спец-интервалов */
+        .class-table.keep-dark th { background-color: #2c3e50 !important; }
+        
+        .class-table.standby-mode th { background-color: #444444 !important; }
 
         .class-table td {
             padding: 20px; text-align: center; border: 1px solid #ddd;
@@ -307,7 +292,7 @@
             const redTimer = document.getElementById(`red-timer-${classId}`);
             const statusBox = document.getElementById(`status-${classId}`);
             
-            table.classList.remove('preparing', 'active-interval', 'standby-mode', 'residual-lesson');
+            table.classList.remove('preparing', 'active-interval', 'standby-mode', 'keep-dark');
             redTimer.classList.remove('show', 'is-preparing', 'is-break', 'is-blue');
             statusBox.style.display = 'none';
 
@@ -321,20 +306,20 @@
                     slot.textContent = 'ВОЗМОЖНОЕ ДОПОЛНИТЕЛЬНОЕ ВРЕМЯ ПЕРЕМЕНЫ';
                     const remaining = spec1End - totalSec;
                     redTimer.innerHTML = `<span>+</span> ${formatTime(remaining)}`;
-                    redTimer.classList.add('show', 'is-break');
+                    redTimer.classList.add('show', 'is-break'); // ТАЙМЕР ЗЕЛЕНЫЙ
                     statusBox.style.display = 'flex';
                     statusBox.className = 'status-container status-green';
-                    table.classList.add('active-interval'); // Здесь шапка СТАНЕТ голубой (т.к. перемена)
+                    table.classList.add('keep-dark'); // ШАПКА ТЕМНО-СИНЯЯ
                     return;
                 } 
                 else if (totalSec >= spec1End && totalSec < spec2End) {
                     slot.textContent = 'ОСТАТОЧНОЕ ВРЕМЯ УРОКА №4';
                     const remaining = spec2End - totalSec;
                     redTimer.textContent = formatTime(remaining);
-                    redTimer.classList.add('show', 'is-blue'); // Таймер голубой
+                    redTimer.classList.add('show', 'is-blue'); // ТАЙМЕР ГОЛУБОЙ
                     statusBox.style.display = 'flex';
                     statusBox.className = 'status-container status-red';
-                    table.classList.add('residual-lesson'); // Добавляем метку "остатка"
+                    table.classList.add('keep-dark'); // ШАПКА ТЕМНО-СИНЯЯ
                     return;
                 }
             }
