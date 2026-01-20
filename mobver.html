@@ -14,43 +14,21 @@
         }
 
         .header {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            padding: 20px 40px; 
-            background-color: #fff; 
-            width: 100%; 
-            box-sizing: border-box;
-            position: sticky; 
-            top: 0; 
-            z-index: 1000; 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 40px; background-color: #fff; width: 100%; 
+            box-sizing: border-box; position: sticky; top: 0; z-index: 1000; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
         }
 
         .mobile-version-badge {
-            display: inline-flex;
-            align-items: center;
-            background-color: #e67e22;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            gap: 10px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-            margin-bottom: 12px;
+            display: inline-flex; align-items: center; background-color: #e67e22;
+            color: white; padding: 6px 14px; border-radius: 8px; font-weight: bold;
+            font-size: 0.9rem; gap: 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.1); margin-bottom: 12px;
         }
 
-        .signal-icon {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 14px;
-        }
+        .signal-icon { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
         .signal-bar { width: 3px; background-color: white; border-radius: 1px; }
-        .bar1 { height: 40%; }
-        .bar2 { height: 70%; }
-        .bar3 { height: 100%; }
+        .bar1 { height: 40%; } .bar2 { height: 70%; } .bar3 { height: 100%; }
 
         .date-block { display: flex; flex-direction: column; align-items: flex-start; }
         .day-name { font-size: 1.8rem; font-weight: bold; color: #2c3e50; }
@@ -58,15 +36,9 @@
         #currentYear { font-size: 3rem; font-weight: bold; color: #2c3e50; }
 
         #currentTime {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 30px auto;
-            background-color: #fff;
-            padding: 15px 25px;
-            border-radius: 14px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            width: fit-content;
+            display: flex; flex-direction: column; align-items: center; margin: 30px auto;
+            background-color: #fff; padding: 15px 25px; border-radius: 14px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); width: fit-content;
         }
         .time-label { font-size: 1.2rem; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
         .time-value { font-size: 3.2rem; color: #333; font-weight: bold; line-height: 1; }
@@ -79,30 +51,23 @@
         .comment-box {
             background-color: #e67e22; color: white; padding: 12px 25px;
             border-radius: 8px; font-weight: bold; min-width: 350px; min-height: 24px;
-            transition: all 0.5s ease; opacity: 0;
-            display: flex; align-items: center; gap: 12px;
+            transition: all 0.5s ease; opacity: 0; display: flex; align-items: center; gap: 12px;
         }
         .comment-box.show { opacity: 1; }
-
         .info-icon {
-            display: flex; align-items: center; justify-content: center;
-            width: 24px; height: 24px; border: 2px solid white; border-radius: 50%; 
-            font-size: 18px; font-weight: bold; flex-shrink: 0;
-            line-height: 0; padding-bottom: 2px; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; 
+            border: 2px solid white; border-radius: 50%; font-size: 18px; font-weight: bold; flex-shrink: 0;
         }
 
         .status-container {
-            position: absolute; left: 20px; top: 50%;
-            transform: translateY(-50%); width: 30px; height: 30px;
-            display: none; align-items: center; justify-content: center;
+            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+            width: 30px; height: 30px; display: none; align-items: center; justify-content: center;
         }
         .status-circle { width: 14px; height: 14px; border-radius: 50%; position: relative; z-index: 2; }
         .status-circle::before, .status-circle::after {
-            content: ""; position: absolute; top: 50%; left: 50%;
-            width: 100%; height: 100%; border-radius: 50%;
-            transform: translate(-50%, -50%); animation: antenna-pulse 2s infinite; z-index: 1;
+            content: ""; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; 
+            border-radius: 50%; transform: translate(-50%, -50%); animation: antenna-pulse 2s infinite; z-index: 1;
         }
-        .status-circle::after { animation-delay: 1s; }
         @keyframes antenna-pulse {
             0% { width: 14px; height: 14px; opacity: 0.8; border-width: 2px; border-style: solid; }
             100% { width: 50px; height: 50px; opacity: 0; border-width: 1px; border-style: solid; }
@@ -112,76 +77,68 @@
         .status-green .status-circle { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
         .status-green .status-circle::before, .status-green .status-circle::after { border-color: #2ecc71; }
         
-        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn-set { background-color: #3498db; color: white; margin-right: 10px; }
         .btn-reset { background-color: #e74c3c; color: white; }
 
         .class-row { display: flex; align-items: stretch; width: 90%; max-width: 1100px; margin: 8px auto; }
         .class-table {
-            flex: 1; border-collapse: collapse; background: white;
-            border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: all 0.5s ease-in-out;
+            flex: 1; border-collapse: collapse; background: white; border-radius: 12px; 
+            overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.5s ease;
         }
         .class-table th {
             padding: 16px; font-size: 1.3rem; color: white; background-color: #2c3e50;
             transition: background-color 0.8s ease; position: relative;
         }
-        .class-table.active-interval th { background-color: #3498db !important; }
-        .class-table.keep-dark th { background-color: #2c3e50 !important; }
+        /* Стандартные цвета состояний */
         .class-table.standby-mode th { background-color: #444444 !important; }
+        .class-table.preparing th { background-color: #2c3e50 !important; }
+        .class-table.active-interval th { background-color: #3498db !important; }
+        /* Среда: принудительный темно-синий для 11-Б */
+        .class-table.keep-dark th { background-color: #2c3e50 !important; }
 
         .class-table td {
             padding: 20px; text-align: center; border: 1px solid #ddd;
-            font-size: 1.2rem; height: 80px; font-weight: 500; position: relative;
-            transition: all 0.5s ease;
+            font-size: 1.2rem; height: 80px; font-weight: 500; position: relative; transition: all 0.5s ease;
         }
-
-        /* Класс для расширения ячейки вниз */
-        .class-table td.expanded-cell {
-            height: 120px;
-            padding-bottom: 45px;
-        }
+        .class-table td.expanded-cell { height: 120px; padding-bottom: 45px; }
 
         .inner-red-timer {
-            position: absolute; bottom: 10px; right: 15px;
-            border: 3px solid #e74c3c; color: #e74c3c;
+            position: absolute; bottom: 10px; right: 15px; border: 3px solid #e74c3c; color: #e74c3c;
             padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 1.1rem;
-            opacity: 0; transform: translateY(5px); transition: all 0.5s ease;
-            display: flex; align-items: center; gap: 5px;
-            background: white; /* Чтобы текст под таймером точно не просвечивал */
+            opacity: 0; transform: translateY(5px); transition: all 0.5s ease; display: flex; align-items: center; gap: 5px;
         }
-        .inner-red-timer.is-break { border-color: #2ecc71; color: #2ecc71; }
-        .inner-red-timer.is-preparing { border-color: #3498db; color: #3498db; }
-        .inner-red-timer.is-blue { border-color: #3498db; color: #3498db; }
         .inner-red-timer.show { opacity: 1; transform: translateY(0); }
+        .inner-red-timer.is-break { border-color: #2ecc71; color: #2ecc71; }
+        .inner-red-timer.is-blue { border-color: #3498db; color: #3498db; }
+        .inner-red-timer.is-preparing { border-color: #3498db; color: #3498db; }
 
+        /* Черные таймеры боковые */
         .timer-container {
             width: 0; max-width: 0; opacity: 0; overflow: hidden;
             transition: all 0.5s ease-in-out; display: flex;
         }
         .timer-container.visible { width: 300px; max-width: 300px; opacity: 1; margin-left: 15px; }
-
         .timer-table {
             width: 280px; border-radius: 10px; overflow: hidden; border-collapse: collapse;
             background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.08); flex-shrink: 0;
         }
         .timer-table th { padding: 12px; background: #222; color: #fff; font-size: 0.9rem; }
-        .timer-table td { padding: 20px; text-align: center; font-size: 1.8rem; font-weight: bold; }
+        .timer-table td { padding: 20px; text-align: center; font-size: 1.8rem; font-weight: bold; color: #333; }
 
+        /* Эффект кручения в шапке */
         .loading-circle {
-            display: inline-block; float: right; margin-left: 10px;
-            width: 22px; height: 22px; border-radius: 50%;
-            border-top: 3px solid white; border-right: 3px solid transparent;
+            display: inline-block; float: right; margin-left: 10px; width: 22px; height: 22px; 
+            border-radius: 50%; border-top: 3px solid white; border-right: 3px solid transparent;
             animation: spin 1s linear infinite; opacity: 0; transition: opacity 0.5s;
         }
         @keyframes spin { to {transform: rotate(360deg);} }
+        .class-table.active-interval .loading-circle,
+        .class-table.preparing .loading-circle { opacity: 1; }
 
         @media (max-width: 768px) {
-            .controls-container { flex-direction: column; width: 95%; }
-            .comment-box { min-width: 90%; font-size: 0.9rem; padding: 10px 15px; }
             .class-row { flex-direction: column; width: 95%; }
             .timer-container.visible { width: 100%; max-width: 100%; margin-left: 0; margin-top: 10px; }
-            .header { padding: 10px 20px; }
         }
     </style>
 </head>
@@ -229,12 +186,10 @@
     </div>
 
     <div id="timeDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2000; width: 85%; max-width: 320px;">
-        <h3 style="margin-top:0; color:#2c3e50;">Тестовые настройки</h3>
-        <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:#7f8c8d;">Выберите дату:</label>
-        <input type="date" id="testDateInput" style="padding: 10px; width: 100%; box-sizing: border-box; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px;">
-        <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:#7f8c8d;">Выберите время:</label>
-        <input type="time" id="testTimeInput" style="padding: 10px; width: 100%; box-sizing: border-box; border: 1px solid #ddd; border-radius: 5px;">
-        <div style="margin-top: 25px; display: flex; gap: 10px;"><button class="btn btn-set" style="flex:1" onclick="setTestTime()">Применить</button><button class="btn" style="flex:1; background:#eee;" onclick="closeTimeDialog()">Отмена</button></div>
+        <h3 style="margin-top:0;">Тестовые настройки</h3>
+        <input type="date" id="testDateInput" style="padding: 10px; width: 100%; margin-bottom: 15px;">
+        <input type="time" id="testTimeInput" style="padding: 10px; width: 100%;">
+        <div style="margin-top: 25px; display: flex; gap: 10px;"><button class="btn btn-set" onclick="setTestTime()">Применить</button><button class="btn" onclick="closeTimeDialog()">Отмена</button></div>
     </div>
 
     <script>
@@ -244,19 +199,14 @@
             { name: 'Урок №1', start: '08:00', end: '08:35' }, { name: 'Перемена', start: '08:35', end: '08:55' },
             { name: 'Урок №2', start: '08:55', end: '09:30' }, { name: 'Перемена', start: '09:30', end: '09:40' },
             { name: 'Урок №3', start: '09:40', end: '10:15' }, { name: 'Перемена', start: '10:15', end: '10:45' },
-            { name: 'Урок №4', start: '10:45', end: '11:20' }, { name: 'Перемена', start: '11:20', end: '11:30' },
-            { name: 'Урок №5', start: '11:30', end: '12:05' }, { name: 'Перемена', start: '12:05', end: '12:15' },
-            { name: 'Урок №6', start: '12:15', end: '12:50' }
+            { name: 'Урок №4', start: '10:45', end: '11:20' }
         ];
 
         const schedule11b = [
             { name: 'Урок №1', start: '08:00', end: '08:35' }, { name: 'Перемена', start: '08:35', end: '08:45' },
             { name: 'Урок №2', start: '08:45', end: '09:20' }, { name: 'Перемена', start: '09:20', end: '09:35' },
             { name: 'Урок №3', start: '09:35', end: '10:10' }, { name: 'Перемена', start: '10:10', end: '10:25' },
-            { name: 'Урок №4', start: '10:25', end: '11:00' }, { name: 'Перемена', start: '11:00', end: '11:10' },
-            { name: 'Урок №5', start: '11:10', end: '11:45' }, { name: 'Перемена', start: '11:45', end: '11:55' },
-            { name: 'Урок №6', start: '11:55', end: '12:30' }, { name: 'Перемена', start: '12:30', end: '12:40' },
-            { name: 'Урок №7', start: '12:40', end: '13:15' }
+            { name: 'Урок №4', start: '10:25', end: '11:00' }
         ];
 
         function timeToSec(str) { const [h, m] = str.split(':').map(Number); return h * 3600 + m * 60; }
@@ -265,14 +215,25 @@
             const now = simulatedNow ? new Date(simulatedNow) : new Date();
             const totalSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-            document.getElementById('timeValue').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            // Обновление времени и даты
+            document.getElementById('timeValue').textContent = now.toLocaleTimeString('ru-RU');
             document.getElementById('dayName').textContent = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'][now.getDay()];
             document.getElementById('dayDate').textContent = now.getDate();
             document.getElementById('month').textContent = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'][now.getMonth()];
             document.getElementById('currentYear').textContent = now.getFullYear();
 
+            // Логика черных таймеров (с 06:55 до 07:00)
             const prepStart = 6 * 3600 + 55 * 60; 
             const activeStart = 7 * 3600;            
+            if (totalSec >= prepStart && totalSec < activeStart) {
+                const diff = activeStart - totalSec;
+                document.getElementById('timer-1ab-value').textContent = document.getElementById('timer-11b-value').textContent = `${Math.ceil(diff / 60)} мин`;
+                document.getElementById('cont-1ab').classList.add('visible');
+                document.getElementById('cont-11b').classList.add('visible');
+            } else {
+                document.getElementById('cont-1ab').classList.remove('visible');
+                document.getElementById('cont-11b').classList.remove('visible');
+            }
 
             processClass('1ab', schedule1ab, totalSec, activeStart, 8 * 3600, prepStart, now);
             processClass('11b', schedule11b, totalSec, activeStart, 8 * 3600, prepStart, now);
@@ -290,97 +251,60 @@
             redTimer.classList.remove('show', 'is-preparing', 'is-break', 'is-blue');
             statusBox.style.display = 'none';
 
-            // ЛОГИКА ДЛЯ СРЕДЫ (11-Б)
+            // СРЕДА: СПЕЦ ИНТЕРВАЛЫ 11-Б
             if (classId === '11b' && now.getDay() === 3) {
-                const spec1Start = timeToSec('10:25');
-                const spec1End = timeToSec('10:45');
-                const spec2End = timeToSec('11:00');
-
-                if (totalSec >= spec1Start && totalSec < spec1End) {
+                const s1 = timeToSec('10:25'), s1e = timeToSec('10:45'), s2e = timeToSec('11:00');
+                if (totalSec >= s1 && totalSec < s1e) {
                     slot.textContent = 'ВОЗМОЖНОЕ ДОПОЛНИТЕЛЬНОЕ ВРЕМЯ ПЕРЕМЕНЫ';
-                    cell.classList.add('expanded-cell'); // Расширяем ячейку
-                    const remaining = spec1End - totalSec;
-                    redTimer.innerHTML = `<span>+</span> ${formatTime(remaining)}`;
+                    cell.classList.add('expanded-cell');
+                    redTimer.innerHTML = `<span>+</span> ${formatTime(s1e - totalSec)}`;
                     redTimer.classList.add('show', 'is-break');
-                    statusBox.style.display = 'flex';
-                    statusBox.className = 'status-container status-green';
-                    table.classList.add('keep-dark');
+                    table.classList.add('active-interval', 'keep-dark'); // loading-circle включится от active-interval
+                    statusBox.style.display = 'flex'; statusBox.className = 'status-container status-green';
                     return;
-                } 
-                else if (totalSec >= spec1End && totalSec < spec2End) {
+                } else if (totalSec >= s1e && totalSec < s2e) {
                     slot.textContent = 'ОСТАТОЧНОЕ ВРЕМЯ УРОКА №4';
-                    const remaining = spec2End - totalSec;
-                    redTimer.textContent = formatTime(remaining);
+                    redTimer.textContent = formatTime(s2e - totalSec);
                     redTimer.classList.add('show', 'is-blue');
-                    statusBox.style.display = 'flex';
-                    statusBox.className = 'status-container status-red';
-                    table.classList.add('keep-dark');
+                    table.classList.add('active-interval', 'keep-dark');
+                    statusBox.style.display = 'flex'; statusBox.className = 'status-container status-red';
                     return;
                 }
             }
 
+            // ОБЩАЯ ЛОГИКА
             if (totalSec < prepStart) {
-                table.classList.add('standby-mode'); slot.textContent = 'ОЖИДАНИЕ УСТАНОВКИ СВЯЗИ С СЕРВЕРОМ';
+                table.classList.add('standby-mode'); slot.textContent = 'ОЖИДАНИЕ УСТАНОВКИ СВЯЗИ...';
             } else if (totalSec < activeStart) {
-                table.classList.add('preparing'); slot.innerHTML = 'ПОДГОТОВКА ПОТОКОВОГО ИНФОРМИРОВАНИЯ...';
+                table.classList.add('preparing'); slot.textContent = 'ПОДГОТОВКА ПОТОКОВОГО ИНФОРМИРОВАНИЯ...';
             } else if (totalSec < activeEnd) {
-                table.classList.add('active-interval');
-                slot.textContent = 'ПОДГОТОВКА К УРОКУ №1';
-                const remaining = activeEnd - totalSec;
-                redTimer.textContent = formatTime(remaining);
+                table.classList.add('active-interval'); slot.textContent = 'ПОДГОТОВКА К УРОКУ №1';
+                redTimer.textContent = formatTime(activeEnd - totalSec);
                 redTimer.classList.add('show', 'is-preparing');
             } else {
-                let currentPeriod = schedule.find(p => totalSec >= timeToSec(p.start) && totalSec < timeToSec(p.end));
-                if (currentPeriod) {
-                    slot.textContent = currentPeriod.name.toUpperCase();
-                    const remaining = timeToSec(currentPeriod.end) - totalSec;
-                    redTimer.textContent = formatTime(remaining);
+                let p = schedule.find(x => totalSec >= timeToSec(x.start) && totalSec < timeToSec(x.end));
+                if (p) {
+                    slot.textContent = p.name.toUpperCase();
+                    redTimer.textContent = formatTime(timeToSec(p.end) - totalSec);
                     redTimer.classList.add('show');
+                    table.classList.add('active-interval');
                     statusBox.style.display = 'flex';
-                    if (currentPeriod.name.includes('Перемена')) {
-                        redTimer.classList.add('is-break');
-                        statusBox.className = 'status-container status-green';
-                    } else {
-                        statusBox.className = 'status-container status-red';
-                    }
-                } else {
-                    table.classList.add('standby-mode'); slot.textContent = 'СИСТЕМА В РЕЖИМЕ ОЖИДАНИЯ';
-                }
+                    if (p.name.includes('Перемена')) { redTimer.classList.add('is-break'); statusBox.className = 'status-container status-green'; }
+                    else { statusBox.className = 'status-container status-red'; }
+                } else { table.classList.add('standby-mode'); slot.textContent = 'СИСТЕМА В ОЖИДАНИИ'; }
             }
         }
 
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60); const s = seconds % 60;
-            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
-
-        function openTimeDialog() {
-            const dialog = document.getElementById('timeDialog');
-            const now = simulatedNow ? new Date(simulatedNow) : new Date();
-            document.getElementById('testDateInput').value = now.toISOString().split('T')[0];
-            document.getElementById('testTimeInput').value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            dialog.style.display = 'block';
-        }
-
+        function formatTime(s) { const min = Math.floor(s / 60), sec = s % 60; return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`; }
+        function openTimeDialog() { document.getElementById('timeDialog').style.display = 'block'; }
         function closeTimeDialog() { document.getElementById('timeDialog').style.display = 'none'; }
-
         function setTestTime() {
-            const dateVal = document.getElementById('testDateInput').value;
-            const timeVal = document.getElementById('testTimeInput').value;
-            if (!dateVal || !timeVal) return;
-            const [year, month, day] = dateVal.split('-').map(Number);
-            const [h, m] = timeVal.split(':').map(Number);
-            simulatedNow = new Date(year, month - 1, day, h, m, 0);
-            updateClockAndUi(); closeTimeDialog();
+            const d = document.getElementById('testDateInput').value, t = document.getElementById('testTimeInput').value;
+            if (!d || !t) return;
+            simulatedNow = new Date(d + 'T' + t); updateClockAndUi(); closeTimeDialog();
         }
-
         function resetToLocalTime() { simulatedNow = null; updateClockAndUi(); }
-
-        setInterval(() => { 
-            if (simulatedNow) simulatedNow = new Date(simulatedNow.getTime() + 1000);
-            updateClockAndUi(); 
-        }, 1000);
-
+        setInterval(() => { if (simulatedNow) simulatedNow = new Date(simulatedNow.getTime() + 1000); updateClockAndUi(); }, 1000);
         updateClockAndUi();
     </script>
 </body>
