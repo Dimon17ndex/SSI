@@ -148,6 +148,11 @@
             font-size: 1.2rem; height: 80px; font-weight: 500; position: relative;
         }
 
+        .class-table td.expanded-cell {
+            height: 120px;
+            padding-bottom: 45px;
+        }
+
         .inner-red-timer {
             position: absolute; bottom: 10px; right: 15px;
             border: 3px solid #e74c3c; color: #e74c3c;
@@ -343,7 +348,6 @@
                 commentBox.classList.remove('show');
             }
 
-            // ИЗМЕНЕНО: интервал подготовки теперь с 06:55
             const prepStart = 6 * 3600 + 55 * 60; 
             const activeStart = 7 * 3600;            
 
@@ -356,19 +360,47 @@
                 toggleTimerVisibility(false);
             }
 
-            processClass('1ab', schedule1ab, totalSec, activeStart, 8 * 3600, prepStart);
-            processClass('11b', schedule11b, totalSec, activeStart, 8 * 3600, prepStart);
+            processClass('1ab', schedule1ab, totalSec, activeStart, 8 * 3600, prepStart, now);
+            processClass('11b', schedule11b, totalSec, activeStart, 8 * 3600, prepStart, now);
         }
 
-        function processClass(classId, schedule, totalSec, activeStart, activeEnd, prepStart) {
+        function processClass(classId, schedule, totalSec, activeStart, activeEnd, prepStart, now) {
             const slot = document.getElementById(`class-${classId}-slot`);
             const table = document.getElementById(`table-${classId}`);
             const redTimer = document.getElementById(`red-timer-${classId}`);
             const statusBox = document.getElementById(`status-${classId}`);
+            const cell = slot.parentElement;
             
             table.classList.remove('preparing', 'active-interval', 'standby-mode');
             redTimer.classList.remove('show', 'is-preparing', 'is-break');
             statusBox.style.display = 'none';
+            cell.classList.remove('expanded-cell');
+
+            if (classId === '11b' && now.getDay() === 3) {
+                const spec1Start = timeToSec('10:25');
+                const spec1End = timeToSec('10:45');
+                const spec2End = timeToSec('11:00');
+
+                if (totalSec >= spec1Start && totalSec < spec1End) {
+                    slot.textContent = 'ВОЗМОЖНОЕ ДОПОЛНИТЕЛЬНОЕ ВРЕМЯ ПЕРЕМЕНЫ';
+                    cell.classList.add('expanded-cell'); 
+                    const remaining = spec1End - totalSec;
+                    redTimer.innerHTML = `<span>+</span> ${formatTime(remaining)}`;
+                    redTimer.classList.add('show', 'is-break'); // ЗЕЛЕНЫЙ
+                    statusBox.style.display = 'flex';
+                    statusBox.className = 'status-container status-green';
+                    return; 
+                } 
+                else if (totalSec >= spec1End && totalSec < spec2End) {
+                    slot.textContent = 'ОСТАТОЧНОЕ ВРЕМЯ УРОКА №4';
+                    const remaining = spec2End - totalSec;
+                    redTimer.textContent = formatTime(remaining);
+                    redTimer.classList.add('show', 'is-preparing'); // ГОЛУБОЙ
+                    statusBox.style.display = 'flex';
+                    statusBox.className = 'status-container status-red';
+                    return;
+                }
+            }
 
             if (totalSec < prepStart) {
                 table.classList.add('standby-mode'); 
