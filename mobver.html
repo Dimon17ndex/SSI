@@ -142,6 +142,11 @@
             transition: background-color 0.8s ease; position: relative;
         }
         .class-table.standby-mode th { background-color: #444444 !important; }
+        /* Шапка синяя только если есть класс active-interval и НЕТ класса остаточного урока */
+        .class-table.active-interval th { background-color: #3498db !important; }
+        .class-table.preparing th { background-color: #2c3e50 !important; }
+        /* Специальное правило: если это остаток урока (blue-timer), возвращаем шапке стандартный цвет */
+        .class-table.residual-lesson th { background-color: #2c3e50 !important; }
 
         .class-table td {
             padding: 20px; text-align: center; border: 1px solid #ddd;
@@ -155,7 +160,6 @@
             opacity: 0; transform: translateY(5px); transition: all 0.5s ease;
             display: flex; align-items: center; gap: 5px;
         }
-        /* Стили для новых режимов */
         .inner-red-timer.is-break { border-color: #2ecc71; color: #2ecc71; }
         .inner-red-timer.is-preparing { border-color: #3498db; color: #3498db; }
         .inner-red-timer.is-blue { border-color: #3498db; color: #3498db; }
@@ -182,8 +186,6 @@
         }
         @keyframes spin { to {transform: rotate(360deg);} }
 
-        .class-table.active-interval th { background-color: #3498db !important; }
-        .class-table.preparing th { background-color: #2c3e50 !important; }
         .class-table.active-interval .loading-circle,
         .class-table.preparing .loading-circle { opacity: 1; }
 
@@ -199,14 +201,7 @@
 <body>
     <div class="header">
         <div class="date-block">
-            <div class="mobile-version-badge">
-                Mobile version
-                <div class="signal-icon">
-                    <div class="signal-bar bar1"></div>
-                    <div class="signal-bar bar2"></div>
-                    <div class="signal-bar bar3"></div>
-                </div>
-            </div>
+            <div class="mobile-version-badge">Mobile version <div class="signal-icon"><div class="signal-bar bar1"></div><div class="signal-bar bar2"></div><div class="signal-bar bar3"></div></div></div>
             <div id="dayName" class="day-name"></div>
             <div class="day-month"><span id="dayDate"></span> <span id="month"></span></div>
         </div>
@@ -219,10 +214,7 @@
     </div>
 
     <div class="controls-container">
-        <div id="commentBox" class="comment-box">
-            <div class="info-icon">!</div>
-            <span id="commentText"></span>
-        </div>
+        <div id="commentBox" class="comment-box"><div class="info-icon">!</div><span id="commentText"></span></div>
         <div>
             <button class="btn btn-set" onclick="openTimeDialog()">Тест</button>
             <button class="btn btn-reset" onclick="resetToLocalTime()">Сброс</button>
@@ -231,41 +223,21 @@
 
     <div class="class-row">
         <table class="class-table" id="table-1ab">
-            <thead>
-                <tr>
-                    <th>
-                        <div class="status-container" id="status-1ab"><div class="status-circle"></div></div>
-                        1-А/Б Класс<span class="loading-circle"></span>
-                    </th>
-                </tr>
-            </thead>
+            <thead><tr><th><div class="status-container" id="status-1ab"><div class="status-circle"></div></div>1-А/Б Класс<span class="loading-circle"></span></th></tr></thead>
             <tbody><tr><td><span id="class-1ab-slot"></span><div class="inner-red-timer" id="red-timer-1ab"></div></td></tr></tbody>
         </table>
         <div class="timer-container" id="cont-1ab">
-            <table class="timer-table">
-                <thead><tr><th>До начала информирования осталось:</th></tr></thead>
-                <tbody><tr><td id="timer-1ab-value">-- мин</td></tr></tbody>
-            </table>
+            <table class="timer-table"><thead><tr><th>До начала информирования осталось:</th></tr></thead><tbody><tr><td id="timer-1ab-value">-- мин</td></tr></tbody></table>
         </div>
     </div>
 
     <div class="class-row">
         <table class="class-table" id="table-11b">
-            <thead>
-                <tr>
-                    <th>
-                        <div class="status-container" id="status-11b"><div class="status-circle"></div></div>
-                        11-Б Класс<span class="loading-circle"></span>
-                    </th>
-                </tr>
-            </thead>
+            <thead><tr><th><div class="status-container" id="status-11b"><div class="status-circle"></div></div>11-Б Класс<span class="loading-circle"></span></th></tr></thead>
             <tbody><tr><td><span id="class-11b-slot"></span><div class="inner-red-timer" id="red-timer-11b"></div></td></tr></tbody>
         </table>
         <div class="timer-container" id="cont-11b">
-            <table class="timer-table">
-                <thead><tr><th>До начала информирования осталось:</th></tr></thead>
-                <tbody><tr><td id="timer-11b-value">-- мин</td></tr></tbody>
-            </table>
+            <table class="timer-table"><thead><tr><th>До начала информирования осталось:</th></tr></thead><tbody><tr><td id="timer-11b-value">-- мин</td></tr></tbody></table>
         </div>
     </div>
 
@@ -275,87 +247,54 @@
         <input type="date" id="testDateInput" style="padding: 10px; width: 100%; box-sizing: border-box; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px;">
         <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:#7f8c8d;">Выберите время:</label>
         <input type="time" id="testTimeInput" style="padding: 10px; width: 100%; box-sizing: border-box; border: 1px solid #ddd; border-radius: 5px;">
-        <div style="margin-top: 25px; display: flex; gap: 10px;">
-            <button class="btn btn-set" style="flex:1" onclick="setTestTime()">Применить</button>
-            <button class="btn" style="flex:1; background:#eee;" onclick="closeTimeDialog()">Отмена</button>
-        </div>
+        <div style="margin-top: 25px; display: flex; gap: 10px;"><button class="btn btn-set" style="flex:1" onclick="setTestTime()">Применить</button><button class="btn" style="flex:1; background:#eee;" onclick="closeTimeDialog()">Отмена</button></div>
     </div>
 
     <script>
         let simulatedNow = null;
 
         const schedule1ab = [
-            { name: 'Урок №1', start: '08:00', end: '08:35' },
-            { name: 'Перемена', start: '08:35', end: '08:55' },
-            { name: 'Урок №2', start: '08:55', end: '09:30' },
-            { name: 'Перемена', start: '09:30', end: '09:40' },
-            { name: 'Урок №3', start: '09:40', end: '10:15' },
-            { name: 'Перемена', start: '10:15', end: '10:45' },
-            { name: 'Урок №4', start: '10:45', end: '11:20' },
-            { name: 'Перемена', start: '11:20', end: '11:30' },
-            { name: 'Урок №5', start: '11:30', end: '12:05' },
-            { name: 'Перемена', start: '12:05', end: '12:15' },
+            { name: 'Урок №1', start: '08:00', end: '08:35' }, { name: 'Перемена', start: '08:35', end: '08:55' },
+            { name: 'Урок №2', start: '08:55', end: '09:30' }, { name: 'Перемена', start: '09:30', end: '09:40' },
+            { name: 'Урок №3', start: '09:40', end: '10:15' }, { name: 'Перемена', start: '10:15', end: '10:45' },
+            { name: 'Урок №4', start: '10:45', end: '11:20' }, { name: 'Перемена', start: '11:20', end: '11:30' },
+            { name: 'Урок №5', start: '11:30', end: '12:05' }, { name: 'Перемена', start: '12:05', end: '12:15' },
             { name: 'Урок №6', start: '12:15', end: '12:50' }
         ];
 
         const schedule11b = [
-            { name: 'Урок №1', start: '08:00', end: '08:35' },
-            { name: 'Перемена', start: '08:35', end: '08:45' },
-            { name: 'Урок №2', start: '08:45', end: '09:20' },
-            { name: 'Перемена', start: '09:20', end: '09:35' },
-            { name: 'Урок №3', start: '09:35', end: '10:10' },
-            { name: 'Перемена', start: '10:10', end: '10:25' },
-            { name: 'Урок №4', start: '10:25', end: '11:00' },
-            { name: 'Перемена', start: '11:00', end: '11:10' },
-            { name: 'Урок №5', start: '11:10', end: '11:45' },
-            { name: 'Перемена', start: '11:45', end: '11:55' },
-            { name: 'Урок №6', start: '11:55', end: '12:30' },
-            { name: 'Перемена', start: '12:30', end: '12:40' },
+            { name: 'Урок №1', start: '08:00', end: '08:35' }, { name: 'Перемена', start: '08:35', end: '08:45' },
+            { name: 'Урок №2', start: '08:45', end: '09:20' }, { name: 'Перемена', start: '09:20', end: '09:35' },
+            { name: 'Урок №3', start: '09:35', end: '10:10' }, { name: 'Перемена', start: '10:10', end: '10:25' },
+            { name: 'Урок №4', start: '10:25', end: '11:00' }, { name: 'Перемена', start: '11:00', end: '11:10' },
+            { name: 'Урок №5', start: '11:10', end: '11:45' }, { name: 'Перемена', start: '11:45', end: '11:55' },
+            { name: 'Урок №6', start: '11:55', end: '12:30' }, { name: 'Перемена', start: '12:30', end: '12:40' },
             { name: 'Урок №7', start: '12:40', end: '13:15' }
         ];
 
-        function timeToSec(str) {
-            const [h, m] = str.split(':').map(Number);
-            return h * 3600 + m * 60;
-        }
-
-        function toggleTimerVisibility(show) {
-            const containers = [document.getElementById('cont-1ab'), document.getElementById('cont-11b')];
-            containers.forEach(c => {
-                if (show) c.classList.add('visible');
-                else c.classList.remove('visible');
-            });
-        }
+        function timeToSec(str) { const [h, m] = str.split(':').map(Number); return h * 3600 + m * 60; }
 
         function updateClockAndUi() {
             const now = simulatedNow ? new Date(simulatedNow) : new Date();
             const totalSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
             document.getElementById('timeValue').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-            
             document.getElementById('dayName').textContent = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'][now.getDay()];
             document.getElementById('dayDate').textContent = now.getDate();
             document.getElementById('month').textContent = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'][now.getMonth()];
             document.getElementById('currentYear').textContent = now.getFullYear();
-
-            const commentBox = document.getElementById('commentBox');
-            if (totalSec >= timeToSec('08:35') && totalSec < timeToSec('08:55')) {
-                document.getElementById('commentText').textContent = "Предположительно, первоклассники сейчас завтракают в столовой";
-                commentBox.classList.add('show');
-            } else {
-                commentBox.classList.remove('show');
-            }
 
             const prepStart = 6 * 3600 + 55 * 60; 
             const activeStart = 7 * 3600;            
 
             if (totalSec >= prepStart && totalSec < activeStart) {
                 const diff = activeStart - totalSec;
-                document.getElementById('timer-1ab-value').textContent = 
-                document.getElementById('timer-11b-value').textContent = `${Math.ceil(diff / 60)} мин`;
-                toggleTimerVisibility(true);
+                document.getElementById('timer-1ab-value').textContent = document.getElementById('timer-11b-value').textContent = `${Math.ceil(diff / 60)} мин`;
+                document.getElementById('cont-1ab').classList.add('visible');
+                document.getElementById('cont-11b').classList.add('visible');
             } else {
-                toggleTimerVisibility(false);
+                document.getElementById('cont-1ab').classList.remove('visible');
+                document.getElementById('cont-11b').classList.remove('visible');
             }
 
             processClass('1ab', schedule1ab, totalSec, activeStart, 8 * 3600, prepStart, now);
@@ -368,11 +307,11 @@
             const redTimer = document.getElementById(`red-timer-${classId}`);
             const statusBox = document.getElementById(`status-${classId}`);
             
-            table.classList.remove('preparing', 'active-interval', 'standby-mode');
+            table.classList.remove('preparing', 'active-interval', 'standby-mode', 'residual-lesson');
             redTimer.classList.remove('show', 'is-preparing', 'is-break', 'is-blue');
             statusBox.style.display = 'none';
 
-            // ЛОГИКА ДЛЯ СРЕДЫ (11-Б класс)
+            // ЛОГИКА ДЛЯ СРЕДЫ (11-Б)
             if (classId === '11b' && now.getDay() === 3) {
                 const spec1Start = timeToSec('10:25');
                 const spec1End = timeToSec('10:45');
@@ -385,28 +324,25 @@
                     redTimer.classList.add('show', 'is-break');
                     statusBox.style.display = 'flex';
                     statusBox.className = 'status-container status-green';
-                    table.classList.add('active-interval');
-                    return; // Прерываем стандартную обработку
+                    table.classList.add('active-interval'); // Здесь шапка СТАНЕТ голубой (т.к. перемена)
+                    return;
                 } 
                 else if (totalSec >= spec1End && totalSec < spec2End) {
                     slot.textContent = 'ОСТАТОЧНОЕ ВРЕМЯ УРОКА №4';
                     const remaining = spec2End - totalSec;
                     redTimer.textContent = formatTime(remaining);
-                    redTimer.classList.add('show', 'is-blue');
+                    redTimer.classList.add('show', 'is-blue'); // Таймер голубой
                     statusBox.style.display = 'flex';
                     statusBox.className = 'status-container status-red';
-                    table.classList.add('active-interval');
-                    return; // Прерываем стандартную обработку
+                    table.classList.add('residual-lesson'); // Добавляем метку "остатка"
+                    return;
                 }
             }
 
-            // СТАНДАРТНАЯ ЛОГИКА
             if (totalSec < prepStart) {
-                table.classList.add('standby-mode'); 
-                slot.textContent = 'ОЖИДАНИЕ УСТАНОВКИ СВЯЗИ С СЕРВЕРОМ';
+                table.classList.add('standby-mode'); slot.textContent = 'ОЖИДАНИЕ УСТАНОВКИ СВЯЗИ С СЕРВЕРОМ';
             } else if (totalSec < activeStart) {
-                table.classList.add('preparing');
-                slot.innerHTML = 'ПОДГОТОВКА ПОТОКОВОГО ИНФОРМИРОВАНИЯ...';
+                table.classList.add('preparing'); slot.innerHTML = 'ПОДГОТОВКА ПОТОКОВОГО ИНФОРМИРОВАНИЯ...';
             } else if (totalSec < activeEnd) {
                 table.classList.add('active-interval');
                 slot.textContent = 'ПОДГОТОВКА К УРОКУ №1';
@@ -428,25 +364,21 @@
                         statusBox.className = 'status-container status-red';
                     }
                 } else {
-                    table.classList.add('standby-mode');
-                    slot.textContent = 'СИСТЕМА В РЕЖИМЕ ОЖИДАНИЯ';
+                    table.classList.add('standby-mode'); slot.textContent = 'СИСТЕМА В РЕЖИМЕ ОЖИДАНИЯ';
                 }
             }
         }
 
         function formatTime(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = seconds % 60;
+            const m = Math.floor(seconds / 60); const s = seconds % 60;
             return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }
 
         function openTimeDialog() {
             const dialog = document.getElementById('timeDialog');
             const now = simulatedNow ? new Date(simulatedNow) : new Date();
-            const dateStr = now.toISOString().split('T')[0];
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            document.getElementById('testDateInput').value = dateStr;
-            document.getElementById('testTimeInput').value = timeStr;
+            document.getElementById('testDateInput').value = now.toISOString().split('T')[0];
+            document.getElementById('testTimeInput').value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             dialog.style.display = 'block';
         }
 
@@ -459,8 +391,7 @@
             const [year, month, day] = dateVal.split('-').map(Number);
             const [h, m] = timeVal.split(':').map(Number);
             simulatedNow = new Date(year, month - 1, day, h, m, 0);
-            updateClockAndUi();
-            closeTimeDialog();
+            updateClockAndUi(); closeTimeDialog();
         }
 
         function resetToLocalTime() { simulatedNow = null; updateClockAndUi(); }
